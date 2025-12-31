@@ -1,6 +1,9 @@
 from pydantic import BaseModel
-from typing import List, Literal,Optional
+from typing import List, Literal, Optional
 from datetime import datetime
+
+from app.schemas.task_instance import TaskInstance
+
 
 class TaskSlot(BaseModel):
     slot_id: str
@@ -24,9 +27,7 @@ class PhaseState(BaseModel):
     slots: List[TaskSlot]
     locked_reason: Optional[str] = None
 
-    model_config = {
-        "extra": "forbid"
-    }
+    model_config = {"extra": "forbid"}
 
 
 class RoadmapState(BaseModel):
@@ -39,14 +40,30 @@ class RoadmapState(BaseModel):
     current_phase: int
     phases: List[PhaseState]
 
+    # 🔑 CRITICAL
+    task_instances: List[TaskInstance]
+
+    confidence_threshold: float
     locked_reason: Optional[str] = None
 
     generated_at: datetime
     last_evaluated_at: datetime
 
+    # ==========================
+    # Slot lookup
+    # ==========================
     def get_slot(self, slot_id: str) -> TaskSlot:
         for phase in self.phases:
             for slot in phase.slots:
                 if slot.slot_id == slot_id:
                     return slot
         raise ValueError(f"Slot with id {slot_id} not found")
+
+    # ==========================
+    # TaskInstance lookup
+    # ==========================
+    def get_task_instance(self, task_instance_id: str) -> TaskInstance:
+        for ti in self.task_instances:
+            if ti.task_instance_id == task_instance_id:
+                return ti
+        raise ValueError(f"TaskInstance {task_instance_id} not found")

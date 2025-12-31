@@ -1,6 +1,7 @@
+# app/schemas/task_instance.py
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Optional, Dict, Literal
 from enum import Enum
 import uuid
 
@@ -13,13 +14,15 @@ class TaskStatus(str, Enum):
 
 class TaskInstance(BaseModel):
     task_instance_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    slot_id: str
     task_template_id: str
-    difficulty: str
+    slot_id: str
+
+    difficulty: Literal["easy", "medium", "hard"]
 
     status: TaskStatus = TaskStatus.IN_PROGRESS
 
     started_at: datetime
     completed_at: Optional[datetime] = None
 
-    evaluation_signals: Dict[str, float] = {}
+    # Evaluation metadata (aggregated signals, not AI output)
+    evaluation_signals: Dict[str, float] = Field(default_factory=dict)

@@ -17,7 +17,7 @@ async def start_slot(
     repo: UserRoadmapRepo = Depends(get_user_roadmap_repo),
 ):
     # 1️⃣ Fetch roadmap (MODEL, not dict)
-    roadmap = await repo.get_active_roadmap(str(user["_id"]))
+    roadmap = await repo.get_user_roadmap(str(user["_id"]))
 
     if not roadmap:
         raise HTTPException(404, "Active roadmap not found")

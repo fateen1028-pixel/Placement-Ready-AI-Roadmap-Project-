@@ -8,9 +8,15 @@ def generate_v1_roadmap(user_id: str, goal: str) -> RoadmapState:
         user_id=user_id,
         goal=goal,
         version=1,
-        status="active", 
+        status="active",
         is_active=True,
+
+        # 🔑 REQUIRED
+        task_instances=[],
+
         current_phase=1,
+        confidence_threshold=0.75,
+
         phases=[
             PhaseState(
                 phase_id=1,
@@ -21,24 +27,25 @@ def generate_v1_roadmap(user_id: str, goal: str) -> RoadmapState:
                         slot_id="arrays_easy",
                         skill="arrays",
                         difficulty="easy",
-                        status="available"
+                        status="available",
                     ),
                     TaskSlot(
                         slot_id="arrays_medium",
                         skill="arrays",
                         difficulty="medium",
-                        status="locked"
-                    )
-                ]
+                        status="locked",
+                    ),
+                ],
             ),
             PhaseState(
                 phase_id=2,
                 name="Intermediate",
                 phase_status="locked",
                 locked_reason="Complete all slots in Foundations phase",
-                slots=[]
-            )
+                slots=[],
+            ),
         ],
+
         generated_at=now,
-        last_evaluated_at=now
+        last_evaluated_at=now,
     )

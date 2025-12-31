@@ -24,8 +24,11 @@ def validate_roadmap_state(roadmap: RoadmapState) -> None:
     if not roadmap.phases:
         raise RoadmapValidationError("No phases defined")
 
-    if roadmap.status not in {"active", "completed", "archived"}:
-        raise RoadmapValidationError(f"Invalid roadmap status: {roadmap.status}")
+    # 🔧 FIX: schema-aligned statuses
+    if roadmap.status not in {"active", "completed", "locked"}:
+        raise RoadmapValidationError(
+            f"Invalid roadmap status: {roadmap.status}"
+        )
 
     # ─────────────────────────────────────────────
     # 2️⃣ Timestamp integrity
@@ -41,20 +44,27 @@ def validate_roadmap_state(roadmap: RoadmapState) -> None:
     # ─────────────────────────────────────────────
     active_phases = [p for p in roadmap.phases if p.phase_status == "active"]
 
+    active_phase = None
+
     if roadmap.status == "active":
         if len(active_phases) != 1:
             raise RoadmapValidationError(
                 f"Exactly one active phase required, found {len(active_phases)}"
             )
+        active_phase = active_phases[0]
     else:
         if active_phases:
             raise RoadmapValidationError(
                 "Non-active roadmap cannot contain an active phase"
             )
 
-    active_phase = active_phases[0] if active_phases else None
-
+    # 🔧 FIX: explicit guard before access
     if roadmap.status == "active":
+        if active_phase is None:
+            raise RoadmapValidationError(
+                "Active roadmap missing active phase"
+            )
+
         if roadmap.current_phase != active_phase.phase_id:
             raise RoadmapValidationError(
                 "current_phase does not match active phase"
@@ -69,7 +79,7 @@ def validate_roadmap_state(roadmap: RoadmapState) -> None:
         "in_progress",
         "completed",
         "failed",
-        "remediation_required"
+        "remediation_required",
     }
 
     in_progress_count = 0
@@ -85,7 +95,7 @@ def validate_roadmap_state(roadmap: RoadmapState) -> None:
                 )
             slot_ids.add(slot.slot_id)
 
-            # Valid status
+            # Valid slot status
             if slot.status not in valid_slot_statuses:
                 raise RoadmapValidationError(
                     f"Invalid slot status {slot.status}"
@@ -121,7 +131,7 @@ def validate_roadmap_state(roadmap: RoadmapState) -> None:
 
         if phase.phase_status == "active":
             if not any(
-                slot.status in {"available", "in_progress"}
+                slot.status in {"available", "in_progress", "remediation_required"}
                 for slot in phase.slots
             ):
                 raise RoadmapValidationError(

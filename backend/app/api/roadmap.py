@@ -22,7 +22,12 @@ async def get_roadmap(
     """
     Retrieve the currently active roadmap for the logged-in user.
     """
-    roadmap = await repo.get_active_roadmap(str(current_user["_id"]))
+    user_id = str(current_user["_id"])
+
+    try:
+        roadmap = await repo.get_user_roadmap(user_id)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Active roadmap not found")
     if not roadmap:
         raise HTTPException(status_code=404, detail="Roadmap not initialized")
     
@@ -40,7 +45,7 @@ async def init_roadmap(
     user: dict = Depends(get_current_user),
     repo: UserRoadmapRepo = Depends(get_user_roadmap_repo)
 ):
-    existing = await repo.get_active_roadmap(str(user["_id"]))
+    existing = await repo.get_user_roadmap(user_id=user["_id"])
     if existing:
         raise HTTPException(400, "Roadmap already exists")
 
@@ -58,4 +63,22 @@ async def init_roadmap(
 
     return roadmap
 
+@router.get("/latest", response_model=RoadmapState)
+async def get_latest_roadmap(
+    user=Depends(get_current_user),
+    roadmap_repo: UserRoadmapRepo = Depends(get_user_roadmap_repo),
+):
+    user_id = str(user["_id"])
+
+    # 1. Try active roadmap first
+    roadmap = await roadmap_repo.get_user_roadmap(user_id)
+    if roadmap:
+        return roadmap
+
+    # 2. Fallback to latest (completed)
+    roadmap = await roadmap_repo.get_latest_roadmap(user_id)
+    if roadmap:
+        return roadmap
+
+    raise HTTPException(404, "No roadmap exists")
 

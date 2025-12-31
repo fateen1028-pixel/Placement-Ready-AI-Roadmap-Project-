@@ -21,9 +21,9 @@ class SkillEntry(BaseModel):
     level: float = 0.0
     confidence: float = 0.0
     last_updated: Optional[datetime] = None
-    evidence_summary: EvidenceSummary = Field(default_factory=EvidenceSummary)
-    source_mix: SourceMix = Field(default_factory=SourceMix)
-    decay: DecayInfo = Field(default_factory=DecayInfo)
+    evidence_summary: Optional[EvidenceSummary] = Field(default_factory=EvidenceSummary)
+    source_mix: Optional[SourceMix] = Field(default_factory=SourceMix)
+    decay: Optional[DecayInfo] = Field(default_factory=DecayInfo)
 
 
 class UserLearningState(BaseModel):

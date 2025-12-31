@@ -1,0 +1,129 @@
+from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime, timezone
+
+from app.api.deps import (
+    get_current_user,
+    get_task_submission_repo,
+    get_user_roadmap_repo,
+)
+
+from app.schemas.task_submission import TaskSubmissionCreate, TaskSubmission
+from app.db.task_submission_repo import TaskSubmissionRepo
+from app.db.user_roadmap_repo import UserRoadmapRepo
+
+from app.domain.submission_guard import validate_submission_allowed
+from app.domain.task_template_loader import get_task_template
+
+from app.services.evaluation_service import evaluate_submission_and_update_roadmap
+
+
+router = APIRouter(
+    prefix="/submissions",
+    tags=["submissions"],
+)
+
+
+@router.post("", response_model=TaskSubmission)
+async def submit_task(
+    payload: TaskSubmissionCreate,
+    user=Depends(get_current_user),
+    submission_repo: TaskSubmissionRepo = Depends(get_task_submission_repo),
+    roadmap_repo: UserRoadmapRepo = Depends(get_user_roadmap_repo),
+):
+    user_id = str(user["_id"])
+
+    # 1. Load active roadmap
+    roadmap = await roadmap_repo.get_user_roadmap(user_id)
+    if not roadmap:
+        raise HTTPException(404, "Active roadmap not found")
+
+    # 2. Slot must exist
+    try:
+        slot = roadmap.get_slot(payload.slot_id)
+    except ValueError:
+        raise HTTPException(404, "Slot not found")
+
+    # 3. Slot must be in progress
+    if slot.status != "in_progress":
+        raise HTTPException(
+            400,
+            f"Slot not in progress (current state: {slot.status})",
+        )
+
+    # 4. Task instance must match active slot task
+    if slot.active_task_instance_id != payload.task_instance_id:
+        raise HTTPException(
+            409,
+            "Task instance does not match active slot task",
+        )
+
+    # 5. Roadmap must not be locked
+    if roadmap.locked_reason:
+        raise HTTPException(
+            423,
+            f"Roadmap locked: {roadmap.locked_reason}",
+        )
+
+    # 6. Domain-level submission guard
+    validate_submission_allowed(slot, payload)
+
+    # 7. Prevent duplicate submission
+    existing = await submission_repo.get_submission(
+        user_id=user_id,
+        slot_id=payload.slot_id,
+        task_instance_id=payload.task_instance_id,
+    )
+    if existing:
+        raise HTTPException(409, "Duplicate submission for this task")
+
+    # 8. Create submission
+    submission = await submission_repo.create_submission(
+        {
+            "user_id": user_id,
+            "slot_id": payload.slot_id,
+            "task_instance_id": payload.task_instance_id,
+            "payload": payload.payload,
+            "status": "submitted",
+            "created_at": datetime.now(timezone.utc),
+            "evaluated_at": None,
+        }
+    )
+
+    # 9. Load task instance (EXPLICIT, NO MAGIC)
+    task_instance = next(
+        (
+            ti
+            for ti in roadmap.task_instances
+            if ti.task_instance_id == payload.task_instance_id
+        ),
+        None,
+    )
+    if not task_instance:
+        raise HTTPException(
+            500,
+            "TaskInstance not found in roadmap (corrupt roadmap state)",
+        )
+
+    # 10. Load task template
+    task_template = get_task_template(
+        task_instance.task_template_id
+    )
+
+    # 11. Evaluate + mutate roadmap
+    evaluation = await evaluate_submission_and_update_roadmap(
+        submission=submission,
+        roadmap=roadmap,
+        task_instance=task_instance,
+        task_template=task_template,
+    )
+
+    # 12. Persist evaluation
+    await submission_repo.attach_evaluation(
+        submission.id,
+        evaluation,
+    )
+
+    # 13. Persist roadmap
+    await roadmap_repo.update_roadmap(roadmap)
+
+    return submission
