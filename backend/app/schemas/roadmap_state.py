@@ -18,6 +18,9 @@ class TaskSlot(BaseModel):
         "remediation_required",
     ]
     active_task_instance_id: Optional[str] = None
+    locked_reason: Optional[Literal["dependency_failed", "remediation_required"]] = None
+    remediation_attempts: int = 0
+
 
 
 class PhaseState(BaseModel):
@@ -67,3 +70,15 @@ class RoadmapState(BaseModel):
             if ti.task_instance_id == task_instance_id:
                 return ti
         raise ValueError(f"TaskInstance {task_instance_id} not found")
+    def validate_state(self) -> None:
+        # Example invariants (minimum)
+        active_phases = [p for p in self.phases if p.phase_status == "active"]
+        if len(active_phases) > 1:
+            raise RuntimeError("More than one active phase")
+
+        for phase in self.phases:
+            for slot in phase.slots:
+                if slot.active_task_instance_id:
+                    ti = self.get_task_instance(slot.active_task_instance_id)
+                    if ti.slot_id != slot.slot_id:
+                        raise RuntimeError("TaskInstance-slot mismatch")

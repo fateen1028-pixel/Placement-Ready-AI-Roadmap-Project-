@@ -6,7 +6,7 @@ from typing import Literal, Optional, List, Dict
 class TaskTemplate(BaseModel):
     task_template_id: str
     slot_id: str
-
+    base_template_id: str
     question_type: Literal["mcq", "coding", "explanation"]
     skill: str
     difficulty: Literal["easy", "medium", "hard"]

@@ -5,11 +5,16 @@ from app.api.deps import (
     get_current_user,
     get_task_submission_repo,
     get_user_roadmap_repo,
+    get_db,
 )
 
 from app.schemas.task_submission import TaskSubmissionCreate, TaskSubmission
 from app.db.task_submission_repo import TaskSubmissionRepo
 from app.db.user_roadmap_repo import UserRoadmapRepo
+from app.db.learning_state_repo import (
+    get_user_learning_state,
+    apply_skill_vector_updates,
+)
 
 from app.domain.submission_guard import validate_submission_allowed
 from app.domain.task_template_loader import get_task_template
@@ -29,6 +34,7 @@ async def submit_task(
     user=Depends(get_current_user),
     submission_repo: TaskSubmissionRepo = Depends(get_task_submission_repo),
     roadmap_repo: UserRoadmapRepo = Depends(get_user_roadmap_repo),
+    db=Depends(get_db),
 ):
     user_id = str(user["_id"])
 
@@ -104,18 +110,38 @@ async def submit_task(
             "TaskInstance not found in roadmap (corrupt roadmap state)",
         )
 
+    # 🔒 Ensure this is the active task instance
+    if task_instance.task_instance_id != slot.active_task_instance_id:
+        raise HTTPException(
+            409,
+            "TaskInstance is not the active instance for this slot",
+        )
+
     # 10. Load task template
-    task_template = get_task_template(
-        task_instance.task_template_id
-    )
+    task_template = get_task_template(task_instance.task_template_id)
+
+    # 10.5 Load Learning State
+    learning_state = await get_user_learning_state(db, user_id)
 
     # 11. Evaluate + mutate roadmap
     evaluation = await evaluate_submission_and_update_roadmap(
         submission=submission,
         roadmap=roadmap,
+        learning_state=learning_state,
         task_instance=task_instance,
         task_template=task_template,
     )
+
+    # 🔒 HARD invariant check
+    from app.domain.roadmap_validator import validate_roadmap_state, RoadmapValidationError
+
+    try:
+        validate_roadmap_state(roadmap)
+    except RoadmapValidationError as e:
+        raise HTTPException(
+            500,
+            f"Roadmap invariant violated after evaluation: {e}",
+        )
 
     # 12. Persist evaluation
     await submission_repo.attach_evaluation(
@@ -125,5 +151,8 @@ async def submit_task(
 
     # 13. Persist roadmap
     await roadmap_repo.update_roadmap(roadmap)
+
+    # 14. Persist Learning State
+    await apply_skill_vector_updates(db, user_id, learning_state.skill_vector)
 
     return submission

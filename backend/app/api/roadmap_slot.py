@@ -7,8 +7,10 @@ from app.domain.roadmap_validator import (
     validate_roadmap_state,
     RoadmapValidationError,
 )
+from app.domain.task_templates import TASK_TEMPLATES
 from app.services.ai_services import AIService
 from app.services.slot_start_service import start_slot as start_slot_domain
+from app.domain.task_template_resolver import resolve_task_template_id
 
 
 router = APIRouter(
@@ -43,10 +45,17 @@ async def start_slot(
 
     # 🔑 Delegate to DOMAIN SERVICE (single source of truth)
     try:
+        task_template_id = resolve_task_template_id(
+        slot=slot,
+        base_template_id=f"{slot.skill}_{slot.difficulty}",
+)
+
+        task_template = TASK_TEMPLATES[task_template_id]
+
         task_instance = start_slot_domain(
             roadmap=roadmap,
             slot_id=slot_id,
-            task_template_id=slot_id,  # or explicit template mapping
+            task_template=task_template,
         )
     except RuntimeError as e:
         raise HTTPException(400, str(e))
