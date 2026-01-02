@@ -45,10 +45,15 @@ async def start_slot(
 
     # 🔑 Delegate to DOMAIN SERVICE (single source of truth)
     try:
+        try:
+            target_slot = roadmap.get_slot(slot_id)
+        except ValueError:
+            raise HTTPException(404, f"Slot {slot_id} not found")
+
         task_template_id = resolve_task_template_id(
-        slot=slot,
-        base_template_id=f"{slot.skill}_{slot.difficulty}",
-)
+            slot=target_slot,
+            base_template_id=f"{target_slot.skill}_{target_slot.difficulty}",
+        )
 
         task_template = TASK_TEMPLATES[task_template_id]
 

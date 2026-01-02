@@ -65,6 +65,7 @@ async def get_user_learning_state(db, user_id: str) -> UserLearningState:
             detail="User learning state not found",
         )
 
+    doc["user_id"] = str(doc["user_id"])
     return UserLearningState(**doc)
 
 
