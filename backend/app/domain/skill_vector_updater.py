@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from app.schemas.learning_state import UserLearningState, SkillEntry, EvidenceSummary
+from app.schemas.learning_state import UserLearningState, SkillEntry, EvidenceSummary, SourceMix
 from app.schemas.task_instance import TaskInstance
 from app.schemas.ai_evaluation import AIEvaluationResult
 
@@ -55,11 +55,18 @@ def apply_skill_vector_update(
             # Create NEW entry with evidence
             learning_state.skill_vector[skill] = SkillEntry(
                 level=level,
+                confidence=0.1,  # Initial confidence for first observation
                 last_updated=now,
                 evidence_summary=EvidenceSummary(
                     total_events=1,
                     weighted_score=evaluation.score,
                     last_event_id=task_instance.task_instance_id
+                ),
+                source_mix=SourceMix(
+                    priors=0.0,
+                    tasks=1.0,  # 100% from this task
+                    assessments=0.0,
+                    projects=0.0
                 )
             )
         else:
@@ -75,3 +82,18 @@ def apply_skill_vector_update(
             entry.evidence_summary.total_events += 1
             entry.evidence_summary.weighted_score += evaluation.score
             entry.evidence_summary.last_event_id = task_instance.task_instance_id
+
+            # Update Confidence (Simple heuristic: grows with exposure)
+            # Cap at 1.0, increment by 0.05 per interaction
+            entry.confidence = min(1.0, entry.confidence + 0.05)
+
+            # Update Source Mix (Moving average towards 'tasks')
+            if entry.source_mix is None:
+                entry.source_mix = SourceMix()
+            
+            # Shift 10% towards tasks
+            alpha = 0.1
+            entry.source_mix.tasks = (1 - alpha) * entry.source_mix.tasks + alpha * 1.0
+            entry.source_mix.priors = (1 - alpha) * entry.source_mix.priors
+            entry.source_mix.assessments = (1 - alpha) * entry.source_mix.assessments
+            entry.source_mix.projects = (1 - alpha) * entry.source_mix.projects
