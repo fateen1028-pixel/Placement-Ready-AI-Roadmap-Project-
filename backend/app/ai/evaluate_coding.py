@@ -1,6 +1,7 @@
 from app.schemas.ai_evaluation import AIEvaluationResult
 from app.domain.task_context import TaskContext
-from app.ai.gemini_client import get_gemini_llm
+# from app.ai.gemini_client import get_gemini_llm
+from app.ai.groq_client import get_groq_llm
 from app.ai.utils import normalize_llm_content
 from langchain_core.messages import HumanMessage
 import json
@@ -17,7 +18,8 @@ def evaluate_coding(
     Context is mandatory.
     """
 
-    llm = get_gemini_llm()
+    # llm = get_gemini_llm()
+    llm = get_groq_llm()
 
     prompt = f"""
 You are evaluating a coding task.

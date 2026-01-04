@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from datetime import datetime, timezone
 
-from app.api.deps import get_current_user, get_user_roadmap_repo
+from app.api.deps import get_current_user, get_user_roadmap_repo, get_db
 from app.db.user_roadmap_repo import UserRoadmapRepo
 from app.domain.roadmap_validator import (
     validate_roadmap_state,
@@ -11,6 +11,7 @@ from app.domain.task_templates import TASK_TEMPLATES
 from app.services.ai_services import AIService
 from app.services.slot_start_service import start_slot as start_slot_domain
 from app.domain.task_template_resolver import resolve_task_template_id
+from app.core.exceptions import TemplateResolutionError, ConcurrencyError
 
 
 router = APIRouter(
@@ -24,11 +25,14 @@ ai_service = AIService()
 # ============================================================
 # START SLOT (FIXED)
 # ============================================================
+from app.db.learning_state_repo import get_user_learning_state
+
 @router.post("/start")
 async def start_slot(
     slot_id: str,
     current_user: dict = Depends(get_current_user),
     repo: UserRoadmapRepo = Depends(get_user_roadmap_repo),
+    db=Depends(get_db),
 ):
     roadmap = await repo.get_user_roadmap(str(current_user["_id"]))
     if not roadmap:
@@ -53,8 +57,9 @@ async def start_slot(
         task_template_id = resolve_task_template_id(
             slot=target_slot,
             base_template_id=f"{target_slot.skill}_{target_slot.difficulty}",
+            allow_fallback=True,
         )
-
+        
         task_template = TASK_TEMPLATES[task_template_id]
 
         task_instance = start_slot_domain(
@@ -62,6 +67,8 @@ async def start_slot(
             slot_id=slot_id,
             task_template=task_template,
         )
+    except TemplateResolutionError as e:
+        raise HTTPException(500, f"Configuration Error: {e}")
     except RuntimeError as e:
         raise HTTPException(400, str(e))
 
@@ -76,12 +83,22 @@ async def start_slot(
             f"Roadmap invariant violated after slot start: {e}",
         )
 
-    await repo.update_roadmap(roadmap)
+    try:
+        await repo.update_roadmap(roadmap, expected_version=roadmap.version - 1)
+    except ConcurrencyError:
+        raise HTTPException(409, "Roadmap modified by another request")
+
+    # Fetch learning state for accurate skill vector
+    try:
+        learning_state = await get_user_learning_state(db, str(current_user["_id"]))
+        skill_vector = {k: v.level for k, v in learning_state.skill_vector.items()}
+    except Exception:
+        skill_vector = {}
 
     hint = await ai_service.generate_hint(
-    slot=roadmap.get_slot(slot_id),
-    user_skill_vector=current_user.get("skill_vector", {}),
-)
+        slot=roadmap.get_slot(slot_id),
+        user_skill_vector=skill_vector,
+    )
 
     return {
         "slot_id": slot_id,
@@ -166,7 +183,10 @@ async def complete_slot(
             f"Roadmap invariant violated after slot completion: {e}",
         )
 
-    await repo.update_roadmap(roadmap)
+    try:
+        await repo.update_roadmap(roadmap, expected_version=roadmap.version - 1)
+    except ConcurrencyError:
+        raise HTTPException(409, "Roadmap modified by another request")
 
     return {
         "slot_id": slot_id,
@@ -214,7 +234,10 @@ async def remediate_slot(
             f"Roadmap invariant violated after remediation: {e}",
         )
 
-    await repo.update_roadmap(roadmap)
+    try:
+        await repo.update_roadmap(roadmap, expected_version=roadmap.version - 1)
+    except ConcurrencyError:
+        raise HTTPException(409, "Roadmap modified by another request")
 
     return {
         "slot_id": slot_id,

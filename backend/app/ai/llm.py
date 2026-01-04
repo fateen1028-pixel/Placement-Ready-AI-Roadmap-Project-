@@ -1,4 +1,5 @@
-from app.ai.gemini_client import get_gemini_llm
+# from app.ai.gemini_client import get_gemini_llm
+from app.ai.groq_client import get_groq_llm
 
 
 async def run_evaluation_prompt(
@@ -8,7 +9,8 @@ async def run_evaluation_prompt(
     problem: str,
     constraints: str | None = None
 ) -> dict:
-    model = get_gemini_llm()
+    # model = get_gemini_llm()
+    model = get_groq_llm()
 
     prompt = f"""
 You are an automated coding evaluator.
@@ -37,4 +39,5 @@ Return STRICT JSON in this format ONLY:
     response = await model.invoke(prompt)
 
     # IMPORTANT: return RAW model output
-    return response.text
+    # return response.text
+    return response.content

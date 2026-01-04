@@ -18,13 +18,14 @@ class TaskSubmissionRepo:
             {"task_instance_id": task_instance_id}
         ) is not None
 
-    async def create_submission(self, data: dict) -> TaskSubmission:
+    async def create_submission(self, data: dict, session=None) -> TaskSubmission:
         data["created_at"] = datetime.now(timezone.utc)
 
-        result = await self.collection.insert_one(data)
+        result = await self.collection.insert_one(data, session=session)
 
         saved = await self.collection.find_one(
-            {"_id": result.inserted_id}
+            {"_id": result.inserted_id},
+            session=session
         )
 
         return TaskSubmission(**self._serialize(saved))
@@ -32,17 +33,19 @@ class TaskSubmissionRepo:
     async def get_submissions_for_slot(
         self,
         user_id: str,
-        slot_id: str
+        slot_id: str,
+        session=None
     ) -> list[TaskSubmission]:
         cursor = self.collection.find(
-            {"user_id": user_id, "slot_id": slot_id}
+            {"user_id": user_id, "slot_id": slot_id},
+            session=session
         ).sort("created_at", -1)
 
         return [
             TaskSubmission(**self._serialize(doc))
             async for doc in cursor
         ]
-    async def get_submission(self, user_id: str, slot_id: str, task_instance_id: str):
+    async def get_submission(self, user_id: str, slot_id: str, task_instance_id: str, session=None):
         """
         Check if a submission already exists for this user + slot + task_instance
         """
@@ -50,7 +53,7 @@ class TaskSubmissionRepo:
             "user_id": user_id,
             "slot_id": slot_id,
             "task_instance_id": task_instance_id
-        })
+        }, session=session)
         if submission:
             return submission
         return None
@@ -60,6 +63,7 @@ class TaskSubmissionRepo:
     self,
     submission_id: str,
     evaluation,
+    session=None
 ):
         await self.collection.update_one(
             {"_id": ObjectId(submission_id)},
@@ -69,6 +73,7 @@ class TaskSubmissionRepo:
                     "evaluated_at": datetime.now(timezone.utc),
                     "status": "evaluated",
                 }
-            }
+            },
+            session=session
         )
 

@@ -4,46 +4,27 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login, user, loading: authLoading } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
-  const [isSetupCompleted, setIsSetupCompleted] = useState(null);
 
   // Check if user is already logged in
   useEffect(() => {
-    async function checkAuth() {
-      try {
-        const res = await fetch(`${APP_URL}/api/current_user`, {
-          credentials: "include",
-        });
-        
-        if (res.ok) {
-          const data = await res.json();
-          setIsAuthenticated(true);
-          setIsSetupCompleted(data.is_setup_completed);
-          
-          // Redirect if already logged in
-          if (data.is_setup_completed) {
-            router.push("/dashboard");
-          } else {
-            router.push("/setup");
-          }
-        } else {
-          setIsAuthenticated(false);
-        }
-      } catch (err) {
-        setIsAuthenticated(false);
+    if (!authLoading && user) {
+      if (user.is_setup_completed) {
+        router.push("/dashboard");
+      } else {
+        router.push("/setup");
       }
     }
-    checkAuth();
-  }, [router]);
+  }, [user, authLoading, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,23 +38,7 @@ export default function LoginPage() {
     
     setIsLoading(true);
     try {
-      const res = await fetch(`${APP_URL}/auth/login`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || "Invalid credentials");
-      }
-      
-      const data = await res.json();
-      setIsAuthenticated(true);
-      setIsSetupCompleted(data.is_setup_completed);
+      const data = await login(email, password);
       
       if (data.is_setup_completed) {
         router.push("/dashboard");
@@ -88,7 +53,7 @@ export default function LoginPage() {
   };
 
   // Show loading while checking auth
-  if (isAuthenticated === null) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-[#030712] flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full" />

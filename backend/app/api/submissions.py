@@ -7,6 +7,8 @@ from app.api.deps import (
     get_user_roadmap_repo,
     get_db,
 )
+from app.db.base import get_client
+from app.core.exceptions import ConcurrencyError
 
 from app.schemas.task_submission import TaskSubmissionCreate, TaskSubmission
 from app.db.task_submission_repo import TaskSubmissionRepo
@@ -82,17 +84,17 @@ async def submit_task(
     if existing:
         raise HTTPException(409, "Duplicate submission for this task")
 
-    # 8. Create submission
-    submission = await submission_repo.create_submission(
-        {
-            "user_id": user_id,
-            "slot_id": payload.slot_id,
-            "task_instance_id": payload.task_instance_id,
-            "payload": payload.payload,
-            "status": "submitted",
-            "created_at": datetime.now(timezone.utc),
-            "evaluated_at": None,
-        }
+    # 8. (Refactored) Prepare virtual submission for evaluation
+    # We do NOT persist yet to ensure transactional integrity.
+    virtual_submission = TaskSubmission(
+        id="temp_id",  # Placeholder, not used in logic
+        user_id=user_id,
+        slot_id=payload.slot_id,
+        task_instance_id=payload.task_instance_id,
+        payload=payload.payload,
+        status="submitted",
+        created_at=datetime.now(timezone.utc),
+        evaluated_at=None,
     )
 
     # 9. Load task instance (EXPLICIT, NO MAGIC)
@@ -123,9 +125,12 @@ async def submit_task(
     # 10.5 Load Learning State
     learning_state = await get_user_learning_state(db, user_id)
 
+    # Capture original version for optimistic locking
+    original_roadmap_version = roadmap.version
+
     # 11. Evaluate + mutate roadmap
     evaluation = await evaluate_submission_and_update_roadmap(
-        submission=submission,
+        submission=virtual_submission,
         roadmap=roadmap,
         learning_state=learning_state,
         task_instance=task_instance,
@@ -143,16 +148,53 @@ async def submit_task(
             f"Roadmap invariant violated after evaluation: {e}",
         )
 
-    # 12. Persist evaluation
-    await submission_repo.attach_evaluation(
-        submission.id,
-        evaluation,
-    )
+    # 12. Persist evaluation (TRANSACTIONAL)
+    client = get_client()
+    try:
+        async with await client.start_session() as session:
+            async with session.start_transaction():
+                # A. Create Submission (Atomic with updates)
+                submission_data = {
+                    "user_id": user_id,
+                    "slot_id": payload.slot_id,
+                    "task_instance_id": payload.task_instance_id,
+                    "payload": payload.payload,
+                    "status": "evaluated",
+                    "created_at": datetime.now(timezone.utc),
+                    "evaluated_at": datetime.now(timezone.utc),
+                    "evaluation": evaluation.model_dump(),
+                }
+                
+                submission = await submission_repo.create_submission(
+                    submission_data,
+                    session=session
+                )
 
-    # 13. Persist roadmap
-    await roadmap_repo.update_roadmap(roadmap)
+                # B. Update Roadmap (with Optimistic Locking)
+                await roadmap_repo.update_roadmap(
+                    roadmap,
+                    expected_version=original_roadmap_version,
+                    session=session
+                )
 
-    # 14. Persist Learning State
-    await apply_skill_vector_updates(db, user_id, learning_state.skill_vector)
+                # C. Update Learning State
+                await apply_skill_vector_updates(
+                    db,
+                    user_id,
+                    learning_state.skill_vector,
+                    session=session
+                )
+    except ConcurrencyError:
+        raise HTTPException(
+            409,
+            "Roadmap was modified by another request. Please retry."
+        )
+    except Exception as e:
+        # If anything else fails, the transaction aborts automatically.
+        # We should probably log this.
+        raise HTTPException(
+            500,
+            f"Transaction failed: {str(e)}"
+        )
 
     return submission

@@ -5,6 +5,7 @@ from app.domain.roadmap_validator import (
     validate_roadmap_state,
     RoadmapValidationError,
 )
+from app.core.exceptions import ConcurrencyError
 
 
 def ensure_utc(dt):
@@ -48,9 +49,10 @@ class UserRoadmapRepo:
 
     # ---------- Public API ----------
 
-    async def get_user_roadmap(self, user_id: str) -> RoadmapState | None:
+    async def get_user_roadmap(self, user_id: str, session=None) -> RoadmapState | None:
         doc = await self.collection.find_one(
-            {"user_id": str(user_id), "is_active": True}
+            {"user_id": str(user_id), "is_active": True},
+            session=session
         )
 
         if not doc:
@@ -58,30 +60,53 @@ class UserRoadmapRepo:
 
         return self._to_domain(doc)
 
-    async def create_roadmap(self, roadmap: RoadmapState) -> None:
+    async def create_roadmap(self, roadmap: RoadmapState, session=None) -> None:
         # 🔒 HARD GATE
         validate_roadmap_state(roadmap)
 
         await self.collection.insert_one(
-            self._to_persistence(roadmap, is_new=True)
+            self._to_persistence(roadmap, is_new=True),
+            session=session
         )
 
-    async def update_roadmap(self, roadmap: RoadmapState) -> None:
+    async def update_roadmap(self, roadmap: RoadmapState, expected_version: int, session=None) -> None:
         # 🔒 HARD GATE
         validate_roadmap_state(roadmap)
 
-        result = await self.collection.update_one(
-            {"user_id": roadmap.user_id, "is_active": True},
-            {"$set": self._to_persistence(roadmap, is_new=False)}
+        # Prepare data, excluding version (handled by $inc)
+        data = self._to_persistence(roadmap, is_new=False)
+        data.pop("version", None)
+
+        # Optimistic Locking:
+        # Only update if the version in DB matches what we read.
+        # Increment version atomically.
+        result = await self.collection.find_one_and_update(
+            {
+                "user_id": roadmap.user_id,
+                "is_active": True,
+                "version": expected_version
+            },
+            {
+                "$set": data,
+                "$inc": {"version": 1}
+            },
+            session=session
         )
 
-        if result.matched_count != 1:
-            raise RuntimeError("Failed to update active roadmap")
+        if not result:
+            # If no document matched, it means either:
+            # 1. Roadmap doesn't exist (unlikely here)
+            # 2. Version mismatch (Concurrency conflict)
+            # We assume conflict if we knew it existed before.
+            raise ConcurrencyError(
+                f"Roadmap update failed. Version mismatch (expected {expected_version})."
+            )
         
-    async def get_latest_roadmap(self, user_id: str) -> RoadmapState | None:
+    async def get_latest_roadmap(self, user_id: str, session=None) -> RoadmapState | None:
         doc = await self.collection.find_one(
             {"user_id": str(user_id)},
-            sort=[("generated_at", -1)]
+            sort=[("generated_at", -1)],
+            session=session
         )
 
         if not doc:

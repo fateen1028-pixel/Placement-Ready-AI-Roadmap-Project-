@@ -23,6 +23,7 @@ def apply_remediation_plan(
         elif action.action == "lock_dependent_slots":
             if slot.status in {"available", "in_progress"}:
                 slot.status = "locked"
+                slot.locked_reason = "dependency_failed"
 
         else:
             raise RuntimeError(f"Unknown remediation action: {action.action}")

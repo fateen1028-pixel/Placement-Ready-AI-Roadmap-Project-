@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from app.schemas.learning_state import UserLearningState, SkillEntry
+from app.schemas.learning_state import UserLearningState, SkillEntry, EvidenceSummary
 from app.schemas.task_instance import TaskInstance
 from app.schemas.ai_evaluation import AIEvaluationResult
 
@@ -52,11 +52,26 @@ def apply_skill_vector_update(
 
     for skill, level in updated_levels.items():
         if skill not in learning_state.skill_vector:
+            # Create NEW entry with evidence
             learning_state.skill_vector[skill] = SkillEntry(
                 level=level,
                 last_updated=now,
+                evidence_summary=EvidenceSummary(
+                    total_events=1,
+                    weighted_score=evaluation.score,
+                    last_event_id=task_instance.task_instance_id
+                )
             )
         else:
+            # Update EXISTING entry
             entry = learning_state.skill_vector[skill]
             entry.level = level
             entry.last_updated = now
+            
+            # Update Evidence
+            if entry.evidence_summary is None:
+                entry.evidence_summary = EvidenceSummary()
+            
+            entry.evidence_summary.total_events += 1
+            entry.evidence_summary.weighted_score += evaluation.score
+            entry.evidence_summary.last_event_id = task_instance.task_instance_id

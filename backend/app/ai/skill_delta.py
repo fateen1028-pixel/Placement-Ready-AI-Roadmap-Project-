@@ -13,11 +13,6 @@ from typing import Literal
 from app.schemas.ai_evaluation import AIEvaluationResult
 
 
-
-
-
-print("LOADED skill_delta.py VERSION WITH question_type")
-
 FAIL_PENALTY = -0.05
 MIN_PASS_SCORE = 0.6
 

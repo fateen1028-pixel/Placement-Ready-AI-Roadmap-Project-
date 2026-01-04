@@ -1,5 +1,6 @@
 from langchain_core.messages import HumanMessage
-from app.ai.gemini_client import get_gemini_llm
+# from app.ai.gemini_client import get_gemini_llm
+from app.ai.groq_client import get_groq_llm
 from app.schemas.ai_evaluation import AIEvaluationResult
 from app.ai.evaluation_guard import enforce_evaluation_rules
 from app.ai.utils import normalize_llm_content
@@ -7,7 +8,8 @@ import json
 
 
 def evaluate_submission():
-    llm = get_gemini_llm()
+    # llm = get_gemini_llm()
+    llm = get_groq_llm()
 
     prompt = """
 Return ONLY valid JSON matching this schema:

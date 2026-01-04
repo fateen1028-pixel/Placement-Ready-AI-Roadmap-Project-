@@ -9,8 +9,8 @@ from app.db.base import close_client,get_database
 from contextlib import asynccontextmanager
 from app.api.roadmap import router as roadmap_router
 from app.api.roadmap_slot import router as roadmap_slot_router
-from app.api.slots import router as slots_router
-from app.api import submissions
+from app.api.submissions import router as submissions_router
+from app.api.learning_state import router as learning_state_router
 from app.core.config import settings
 from app.core.logging import setup_logging
 from fastapi.responses import JSONResponse
@@ -49,8 +49,10 @@ app.include_router(tasks_router)
 app.include_router(users_router,prefix="/api",tags=["users"])
 app.include_router(roadmap_router)
 app.include_router(roadmap_slot_router)
-app.include_router(slots_router, prefix="/roadmap", tags=["slots"])
-app.include_router(submissions.router)
+app.include_router(submissions_router)
+app.include_router(learning_state_router)
+
+
 
 app.add_middleware(
     CORSMiddleware,

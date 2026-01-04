@@ -15,6 +15,7 @@ router = APIRouter(
 
 
 @router.get("", response_model=RoadmapState)
+@router.get("/current", response_model=RoadmapState)
 async def get_roadmap(
     current_user=Depends(get_current_user),
     repo: UserRoadmapRepo = Depends(get_user_roadmap_repo)

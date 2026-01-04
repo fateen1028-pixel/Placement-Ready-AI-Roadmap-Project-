@@ -21,51 +21,122 @@ SkillForgeAI is an AI-powered backend system designed to facilitate personalized
 
 ## API Endpoints
 
-### Authentication
+### Authentication (`/auth`)
 
-- **POST /auth/register**: Register a new user. Sets access and refresh tokens as cookies on success.
-- **POST /auth/login**: Log in an existing user. Sets access and refresh tokens as cookies on success.
-- **POST /auth/logout**: Log out the current user. Deletes authentication cookies.
-- **POST /auth/refresh**: Refresh the access token using a valid refresh token cookie.
+The authentication module handles user registration, login, logout, and token management using JWTs stored in HTTP-only cookies.
 
-### User
+- **POST /auth/register**
+  - **Description**: Registers a new user with email, password, and name.
+  - **Request Body**: `RegisterRequest` (email, password, name).
+  - **Response**: Sets `access_token` and `refresh_token` cookies. Returns success message.
+  - **Errors**: 400 (Registration failed), 500 (Internal server error).
 
-- **GET /users/current_user**: Get the current authenticated user's basic info (id, email, setup status).
-- **POST /users/setup_user**: Set up user skills and profile (requires authentication).
-- **GET /users/general_profile**: Get the full user profile (requires authentication).
+- **POST /auth/login**
+  - **Description**: Authenticates a user and issues tokens.
+  - **Request Body**: `LoginRequest` (email, password).
+  - **Response**: Sets `access_token` and `refresh_token` cookies. Returns user setup status.
+  - **Errors**: 401 (Invalid credentials).
 
-### Diagnosis
+- **POST /auth/logout**
+  - **Description**: Logs out the user by clearing authentication cookies.
+  - **Response**: Clears `access_token` and `refresh_token` cookies.
 
-- **POST /diagnose/**: Diagnose weak skills from a provided skill dictionary. Returns a list of weak skills.
+- **POST /auth/refresh**
+  - **Description**: Refreshes the access token using a valid refresh token.
+  - **Request**: Requires `refresh_token` cookie.
+  - **Response**: Sets a new `access_token` cookie.
+  - **Errors**: 401 (Missing or invalid refresh token).
 
-### Learning State
+### User Management (`/users`)
 
-- **POST /learning_state/init**: Initialize a new learning state for the user (optionally for a specific roadmap).
-- **GET /learning_state/**: Retrieve the current user's learning state.
-- **PATCH /learning_state/**: Update the user's learning state with provided data.
+Manages user profiles and initial setup.
 
-### Roadmap
+- **GET /users/current_user**
+  - **Description**: Retrieves basic information about the currently authenticated user.
+  - **Response**: User ID, email, and setup completion status.
 
-- **GET /roadmap**: Retrieve the currently active roadmap for the logged-in user.
-- **POST /roadmap/init**: Initialize a new roadmap for the user (fails if one already exists).
+- **POST /users/setup_user**
+  - **Description**: Completes the initial user setup, including skill assessment.
+  - **Request Body**: `UserSetupRequest` (skills, goals, etc.).
+  - **Response**: Updated user profile data.
 
-### Roadmap Slot
+- **GET /users/general_profile**
+  - **Description**: Retrieves the full profile of the authenticated user.
+  - **Response**: ID, email, name, setup status, and creation timestamp.
 
-- **POST /roadmap/slot/start**: Start a specific slot in the active roadmap phase. Returns a hint and updated roadmap.
-- **POST /roadmap/slot/complete**: Complete a slot (success or failure) and update skill vector and roadmap.
-- **POST /roadmap/slot/remediate**: Mark a slot for remediation in the roadmap.
+### Diagnosis (`/diagnose`)
 
-### Slots (Task Instances)
+Provides AI-driven skill diagnosis.
 
-- **POST /slots/{slot_id}/start**: Start a task slot in the roadmap. Returns task instance details and slot info.
+- **POST /diagnose/**
+  - **Description**: Analyzes a provided set of skills to identify weaknesses.
+  - **Request Body**: Dictionary of skills and their levels.
+  - **Response**: List of identified weak skills.
 
-### Tasks
+### Learning State (`/learning_state`)
 
-- **GET /tasks/**: Retrieve protected tasks for the current user (example endpoint).
+Manages the user's evolving learning state, including skill vectors and history.
 
-### Submission
+- **POST /learning_state/init**
+  - **Description**: Initializes a new learning state for the user, optionally linking to a roadmap.
+  - **Query Params**: `roadmap_id` (optional).
+  - **Response**: The created learning state object.
 
-- **/submit**: (Endpoint exists, but not yet implemented.)
+- **GET /learning_state/**
+  - **Description**: Retrieves the current user's learning state.
+  - **Response**: `UserLearningState` object containing skill vectors and history.
+
+- **PATCH /learning_state/**
+  - **Description**: Updates specific fields in the user's learning state.
+  - **Request Body**: Dictionary of fields to update.
+  - **Response**: The updated learning state.
+
+### Roadmap (`/roadmap`)
+
+Handles the creation and retrieval of personalized learning roadmaps.
+
+- **GET /roadmap** (also **/roadmap/current**)
+  - **Description**: Retrieves the currently active roadmap for the user.
+  - **Response**: `RoadmapState` object.
+  - **Errors**: 404 (Active roadmap not found), 500 (Roadmap corrupted).
+
+- **POST /roadmap/init**
+  - **Description**: Generates and initializes a new roadmap based on the user's goal.
+  - **Response**: The newly created `RoadmapState`.
+  - **Errors**: 400 (Roadmap already exists).
+
+- **GET /roadmap/latest**
+  - **Description**: Retrieves the most recent roadmap, whether active or completed.
+  - **Response**: `RoadmapState` object.
+  - **Errors**: 404 (No roadmap exists).
+
+### Roadmap Slot (`/roadmap/slot`)
+
+Manages individual learning slots within a roadmap.
+
+- **POST /roadmap/slot/start**
+  - **Description**: Starts a specific slot in the roadmap, changing its status to `in_progress`.
+  - **Query Params**: `slot_id`.
+  - **Response**: Returns the started task instance and an AI-generated hint.
+  - **Errors**: 404 (Slot not found), 409 (Another slot in progress), 500 (Configuration error).
+
+### Submissions (`/submissions`)
+
+Handles the submission and evaluation of tasks.
+
+- **POST /submissions**
+  - **Description**: Submits a solution for an active task instance. Triggers AI evaluation and roadmap updates.
+  - **Request Body**: `TaskSubmissionCreate` (slot_id, task_instance_id, payload).
+  - **Response**: `TaskSubmission` object including evaluation results.
+  - **Errors**: 400 (Slot not in progress), 409 (Duplicate submission or mismatch), 423 (Roadmap locked).
+
+### Tasks (`/tasks`)
+
+- **GET /tasks/**
+  - **Description**: A protected endpoint for retrieving task-related information (currently a placeholder).
+  - **Response**: User ID and message.
+
+
 
 ---
 

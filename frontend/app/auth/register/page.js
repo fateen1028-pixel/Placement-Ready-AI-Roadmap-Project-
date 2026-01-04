@@ -4,14 +4,13 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+import { useAuth } from "@/hooks/useAuth";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { register, user, loading: authLoading } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
-  const [isSetupCompleted, setIsSetupCompleted] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -23,32 +22,14 @@ export default function RegisterPage() {
 
   // Check if user is already logged in
   useEffect(() => {
-    async function checkAuth() {
-      try {
-        const res = await fetch(`${APP_URL}/api/current_user`, {
-          credentials: "include",
-        });
-        
-        if (res.ok) {
-          const data = await res.json();
-          setIsAuthenticated(true);
-          setIsSetupCompleted(data.is_setup_completed);
-          
-          // Redirect if already logged in
-          if (data.is_setup_completed) {
-            router.push("/dashboard");
-          } else {
-            router.push("/setup");
-          }
-        } else {
-          setIsAuthenticated(false);
-        }
-      } catch (err) {
-        setIsAuthenticated(false);
+    if (!authLoading && user) {
+      if (user.is_setup_completed) {
+        router.push("/dashboard");
+      } else {
+        router.push("/setup");
       }
     }
-    checkAuth();
-  }, [router]);
+  }, [user, authLoading, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,26 +54,7 @@ export default function RegisterPage() {
     setIsLoading(true);
     
     try {
-      const res = await fetch(`${APP_URL}/auth/register`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || "Registration failed");
-      }
-
-      setIsAuthenticated(true);
-      setIsSetupCompleted(false);
+      await register(formData.name, formData.email, formData.password);
       
       // New users always go to setup first
       router.push("/setup");

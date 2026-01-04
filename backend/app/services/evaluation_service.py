@@ -67,13 +67,15 @@ async def evaluate_submission_and_update_roadmap(
     # 3. Mutate Slot
     # ================================
     slot = roadmap.get_slot(task_instance.slot_id)
-    was_remediation = slot.status == "remediation_required"
+    was_remediation = slot.remediation_attempts > 0
 
     if evaluation.passed:
         slot.status = "completed"
+        # Unlock next slot in the same phase
+        _unlock_next_slot_in_phase(roadmap, slot.slot_id)
     else:
         slot.status = "remediation_required"
-        slot.remediation_attempts += 1
+        # Note: remediation_attempts is incremented in start_slot, not here.
 
     slot.active_task_instance_id = None
 
@@ -150,6 +152,33 @@ async def evaluate_submission_and_update_roadmap(
 
     return evaluation
 
+
+def _unlock_next_slot_in_phase(roadmap: RoadmapState, current_slot_id: str) -> None:
+    """
+    Finds the active phase and unlocks the next slot if the current one is completed.
+    """
+    active_phase = next(
+        (p for p in roadmap.phases if p.phase_status == "active"),
+        None
+    )
+    if not active_phase:
+        return
+
+    # Find index of current slot
+    try:
+        current_idx = next(
+            i for i, s in enumerate(active_phase.slots) 
+            if s.slot_id == current_slot_id
+        )
+    except StopIteration:
+        return
+
+    # Check if there is a next slot
+    if current_idx + 1 < len(active_phase.slots):
+        next_slot = active_phase.slots[current_idx + 1]
+        if next_slot.status == "locked":
+            next_slot.status = "available"
+            next_slot.locked_reason = None
 
 
 def _resolve_active_phase(roadmap: RoadmapState) -> None:

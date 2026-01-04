@@ -54,9 +54,10 @@ async def create_user_learning_state(
 # FETCH LEARNING STATE
 # -------------------------------
 
-async def get_user_learning_state(db, user_id: str) -> UserLearningState:
+async def get_user_learning_state(db, user_id: str, session=None) -> UserLearningState:
     doc = await db.user_learning_state.find_one(
-        {"user_id": ObjectId(user_id)}
+        {"user_id": ObjectId(user_id)},
+        session=session
     )
 
     if not doc:
@@ -115,11 +116,12 @@ async def apply_skill_vector_updates(
     db,
     user_id: str,
     updated_skills: dict[str, SkillEntry],
+    session=None
 ):
     update_payload: Dict[str, Any] = {
-    f"skill_vector.{skill_id}": entry.dict()
-    for skill_id, entry in updated_skills.items()
-}
+        f"skill_vector.{skill_id}": entry.model_dump()
+        for skill_id, entry in updated_skills.items()
+    }
 
 
     update_payload["updated_at"] = datetime.utcnow()
@@ -127,6 +129,7 @@ async def apply_skill_vector_updates(
     result = await db.user_learning_state.update_one(
         {"user_id": ObjectId(user_id)},
         {"$set": update_payload},
+        session=session
     )
 
     if result.matched_count == 0:

@@ -15,10 +15,14 @@ def start_slot(
     # 1️⃣ Fetch slot
     slot = roadmap.get_slot(slot_id)
 
-    if slot.status != "available":
-        raise RuntimeError(f"Slot {slot_id} not available")
+    if slot.status not in ["available", "remediation_required"]:
+        raise RuntimeError(f"Slot {slot_id} not available (status: {slot.status})")
 
-    # 2️⃣ Defensive validation
+    # 2️⃣ Handle Remediation Retry (Increment Attempts)
+    if slot.status == "remediation_required":
+        slot.remediation_attempts += 1
+
+    # 3️⃣ Defensive validation
     if task_template.skill != slot.skill:
         raise RuntimeError(
             f"TaskTemplate skill {task_template.skill} "
