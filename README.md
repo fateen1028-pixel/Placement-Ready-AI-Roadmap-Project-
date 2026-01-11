@@ -1,210 +1,245 @@
-# SkillForgeAI
+# SkillForgeAI — Invariant-Driven Adaptive Learning System
 
-SkillForgeAI is an AI-powered platform for personalized learning, skill assessment, and adaptive roadmaps. It consists of a modern **Next.js** frontend and a robust **FastAPI** backend, designed for learners aiming to master Data Structures & Algorithms (DSA), ace interviews, and achieve career goals with AI-driven guidance.
+SkillForgeAI is not a generic "AI learning app." It is an **invariant-driven adaptive learning system** that models a learner's evolving skill state, generates constrained roadmaps, and orchestrates AI-evaluated tasks while preserving **roadmap consistency, phase correctness, and skill-vector integrity** under retries, failures, and remediation.
 
----
-
-## Table of Contents
-- [Project Overview](#project-overview)
-- [Architecture](#architecture)
-- [Features](#features)
-- [Folder Structure](#folder-structure)
-- [Backend Documentation](#backend-documentation)
-- [Frontend Documentation](#frontend-documentation)
-- [Setup & Installation](#setup--installation)
-- [Contributing](#contributing)
-- [License](#license)
+This project was designed to solve the hard systems problems most AI learning platforms ignore:  
+**State corruption, unreliable AI output, non-deterministic evaluation, and uncontrolled progression.**
 
 ---
 
-## Project Overview
+## Executive Summary
 
-SkillForgeAI provides:
-- AI-driven skill diagnosis and personalized learning roadmaps
-- Secure authentication and user management
-- Task creation, submission, and evaluation
-- Real-time chat assistant for DSA and interview prep
-- Progress tracking and adaptive feedback
+SkillForgeAI implements a full end-to-end learning control system:
 
----
+- A strict **Roadmap State Engine** with immutable transitions  
+- A **slot-based execution model** governing task lifecycle  
+- A **unified AI evaluation pipeline** with contract-enforced outputs  
+- A **skill-delta engine** that updates learner state only on genuine attempts  
+- A **domain validator layer** that enforces all system invariants before persistence  
 
-## Architecture
+Every roadmap mutation, task resolution, and phase transition is **schema-validated, invariant-checked, and version-controlled.**
 
-**Frontend:** Next.js (React), Tailwind CSS, Axios
-
-**Backend:** FastAPI, Pydantic, JWT, MongoDB (via Motor), LangChain, Google GenAI, Groq
-
----
-
-## Features
-
-- **User Authentication:** Registration, login, logout, JWT-based sessions
-- **Skill Diagnosis:** AI analysis of user skills and weaknesses
-- **Personalized Roadmaps:** Dynamic, goal-driven learning plans
-- **Task Management:** Task assignment, submission, and AI evaluation
-- **Mentor Chatbot:** Real-time AI assistant for DSA/interview queries
-- **Progress Tracking:** Skill vectors, history, and evidence tracking
-- **Modern UI:** Responsive, accessible, and user-friendly interface
+This system is engineered to remain correct even when:
+- AI responses are malformed
+- Users retry or abandon tasks
+- Evaluations contradict expectations
+- Or partial failures occur
 
 ---
 
-## Folder Structure
+## The Core Problem
 
-```
-SkillForgeAI/
-│
-├── backend/         # FastAPI backend
-│   ├── app/         # Main backend application
-│   │   ├── ai/      # AI adapters, clients, prompts
-│   │   ├── api/     # API endpoints (auth, users, tasks, etc.)
-│   │   ├── core/    # Config, logging, exceptions
-│   │   ├── db/      # Database models and repositories
-│   │   ├── domain/  # Domain logic and business entities
-│   │   ├── schemas/ # Pydantic models
-│   │   ├── services/# Business logic/services
-│   │   ├── tests/   # Unit/integration tests
-│   │   └── utils/   # Utility functions
-│   ├── requirements.txt
-│   └── pyproject.toml
-│
-├── frontend/        # Next.js frontend
-│   ├── app/         # App directory (routing, pages)
-│   ├── components/  # UI components (chatbot, roadmap, etc.)
-│   ├── context/     # React context (auth, etc.)
-│   ├── hooks/       # Custom React hooks
-│   ├── lib/         # Utility libraries
-│   ├── services/    # API service wrappers
-│   ├── store/       # State management
-│   ├── styles/      # Global styles (Tailwind)
-│   └── public/      # Static assets
-│
-└── README.md        # Project documentation
+Most "AI learning platforms" are thin CRUD apps wrapped around LLM calls.
+
+They fail because they:
+- Trust non-deterministic AI output  
+- Allow uncontrolled progression  
+- Mutate roadmap state freely  
+- Lose consistency under retries  
+- Cannot guarantee learning correctness  
+
+SkillForgeAI was built to explicitly solve:
+1. **How do you evolve a learner's roadmap without breaking phase logic?** 2. **How do you evaluate tasks with AI while enforcing deterministic contracts?** 3. **How do you update skill state only from valid, verified attempts?** 4. **How do you prevent roadmap corruption under concurrent actions?**
+
+The answer is not "more prompts."  
+The answer is **systems engineering.**
+
+---
+
+## System Architecture
+
+SkillForgeAI is organized as a layered control system:
+
+```text
+Client (Next.js)
+  ↓
+API Layer (FastAPI routers)
+  ↓
+Application Services
+  ↓
+Domain Layer (Authoritative)
+  ↓
+Invariant Validator
+  ↓
+Persistence (MongoDB)
 ```
 
----
+### Core Subsystems:
+- **Roadmap State Engine** — authoritative learning state
+- **Slot Lifecycle Controller** — governs task execution
+- **Evaluation Orchestrator** — routes submissions to strict evaluators
+- **AI Adapter Layer** — isolates all model interactions
+- **Skill Delta Engine** — computes bounded, normalized updates
+- **Domain Validator** — blocks illegal state transitions
+- **Repository Layer** — persistence with post-mutation validation
 
-## Backend Documentation
-
-### Tech Stack
-- **Python 3.10+**
-- **FastAPI** for API endpoints
-- **Pydantic** for data validation
-- **MongoDB** (Motor driver)
-- **JWT** for authentication
-- **LangChain, Google GenAI, Groq** for AI features
-
-### Main Modules
-- **Authentication:** Register, login, logout, token refresh (JWT in HTTP-only cookies)
-- **User Management:** Profile, setup, and general info
-- **Diagnosis:** AI-driven skill analysis
-- **Learning State:** Skill vectors, history, and updates
-- **Roadmap:** Personalized learning plans, slot management
-- **Submissions:** Task submission and AI evaluation
-- **Tasks:** Task retrieval and management
-
-### Example API Endpoints
-
-#### Auth
-- `POST /auth/register` – Register new user
-- `POST /auth/login` – Login and receive tokens
-- `POST /auth/logout` – Logout user
-- `POST /auth/refresh` – Refresh access token
-
-#### Users
-- `GET /users/current_user` – Get current user info
-- `POST /users/setup_user` – Complete user setup
-- `GET /users/general_profile` – Get full user profile
-
-#### Diagnosis
-- `POST /diagnose/` – Analyze skills and return weaknesses
-
-#### Learning State
-- `POST /learning_state/init` – Initialize learning state
-- `GET /learning_state/` – Get current learning state
-- `PATCH /learning_state/` – Update learning state
-
-#### Roadmap
-- `GET /roadmap` – Get current roadmap
-- `POST /roadmap/init` – Generate new roadmap
-- `GET /roadmap/latest` – Get latest roadmap
-
-#### Roadmap Slot
-- `POST /roadmap/slot/start` – Start a roadmap slot
-
-#### Submissions
-- `POST /submissions` – Submit and evaluate a task
-
-#### Tasks
-- `GET /tasks/` – Retrieve tasks
-
-### Running the Backend
-
-1. **Install dependencies:**
-	```bash
-	pip install -r requirements.txt
-	```
-2. **Configure environment variables:** (see `app/core/config.py`)
-3. **Run the server:**
-	```bash
-	uvicorn app.main:app --reload
-	```
-4. **Run tests:**
-	```bash
-	pytest app/tests
-	```
+All mutations flow through the domain layer and are rejected if **any invariant is violated.**
 
 ---
 
-## Frontend Documentation
+## Core Architectural Components
 
-### Tech Stack
-- **Next.js 16+** (React 19)
-- **Tailwind CSS** for styling
-- **Axios** for API requests
+### 1. Roadmap State Engine
+- Immutable roadmap contract
+- Phase → slot → task instance hierarchy
+- Versioned mutations
+- Deterministic phase transitions
+- Locking and remediation support
 
-### Main Features
-- **Authentication:** Login, register, logout (integrates with backend JWT)
-- **Dashboard:** Personalized dashboard with roadmap, tasks, and chatbot
-- **Roadmap:** Visualizes learning phases and slots
-- **Tasks:** Task cards, submission, and feedback
-- **Chatbot:** AI assistant for DSA/interview help
-- **Setup Flow:** Onboarding for skills, goals, and languages
+### 2. Slot Lifecycle Controller
+- Enforces: `idle` → `in_progress` → `completed/locked`
+- Prevents parallel execution conflicts
+- Guarantees one active slot at a time
+- Tracks attempt history and resolution paths
 
-### Key Directories
-- `app/` – Routing, pages (dashboard, auth, setup, etc.)
-- `components/` – UI components (ChatbotTab, RoadmapTab, etc.)
-- `services/` – API wrappers (auth, roadmap, task, chat)
-- `context/` – Auth context provider
-- `hooks/` – Custom hooks (useAuth, useChat, etc.)
-- `store/` – State management (roadmap, skill, task)
-- `styles/` – Tailwind global styles
+### 3. Unified Evaluation Pipeline
+- Routes MCQ, coding, and explanation tasks
+- Strict JSON-only AI responses
+- Sanitization and schema enforcement
+- Context-aware evaluation prompts
+- Pass/fail coherence checks
 
-### Running the Frontend
+### 4. Skill Delta Engine
+- Converts evaluation results into bounded deltas
+- Normalizes floating-point instability
+- Clamps values to domain limits
+- Applies updates only after validator approval
 
-1. **Install dependencies:**
-	```bash
-	npm install
-	# or
-	yarn install
-	```
-2. **Configure environment variables:**
-	- `NEXT_PUBLIC_API_URL` (backend URL, e.g., http://localhost:8000)
-3. **Run the development server:**
-	```bash
-	npm run dev
-	# or
-	yarn dev
-	```
-4. **Open** [http://localhost:3000](http://localhost:3000)
+### 5. Domain Validator Layer
+The most critical system component.
+
+Before any roadmap is persisted, the validator enforces:
+- Roadmap structural integrity  
+- Slot state correctness  
+- Phase completion rules  
+- Task resolution consistency  
+- Skill-vector bounds  
+- Timestamp monotonicity  
+
+If any rule fails, the mutation is rejected.
+
+---
+
+## System Invariants (Guarantees)
+
+SkillForgeAI enforces hard guarantees, including:
+- A roadmap can only evolve through validated transitions  
+- A slot cannot complete without evaluated task instances  
+- Only one slot may be active at any time  
+- Phase completion is deterministic  
+- Skill vectors only update on genuine attempts  
+- Failed or malformed AI output cannot corrupt state  
+- All roadmap persistence is post-validation  
+
+These invariants are enforced at the **domain level**, not in the UI.
 
 ---
 
-## Contributing
+## Failure Handling & Governance
 
-Contributions are welcome! Please fork the repository and submit a pull request.
+SkillForgeAI explicitly models failure:
+- Malformed AI responses are rejected and retried
+- Evaluation inconsistencies are blocked
+- Weak performance triggers remediation slots
+- Locked slots prevent premature advancement
+- Re-attempts do not overwrite historical state
+- Skill updates are applied only after validator approval
+
+This transforms AI from a trusted oracle into a **constrained subsystem.**
 
 ---
+
+## Technology Stack
+
+### Backend
+- **Language:** Python 3.10+
+- **Framework:** FastAPI
+- **Validation:** Pydantic (strict domain models)
+- **Database:** MongoDB (Motor)
+- **Auth:** JWT authentication
+- **AI:** LangChain adapters, Google GenAI / Groq
+- **Testing:** Pytest
+
+### Frontend
+- **Framework:** Next.js (App Router)
+- **Library:** React
+- **Styling:** Tailwind CSS
+- **Network:** Axios
+
+The frontend is intentionally thin.  
+The backend is the source of truth.
+
+---
+
+## Project Structure
+
+```bash
+backend/
+├── app/
+│   ├── ai/          # model adapters, prompt isolation
+│   ├── api/         # HTTP layer only
+│   ├── core/        # config, logging, exceptions
+│   ├── domain/      # authoritative business logic
+│   ├── services/    # orchestration layer
+│   ├── schemas/     # strict Pydantic contracts
+│   ├── db/          # repositories and persistence
+│   └── utils/       # helpers
+└── tests/           # deterministic system tests
+
+frontend/
+├── app/
+├── components/
+├── services/
+└── store/
+```
+
+Domain logic never depends on HTTP, UI, or AI providers.
+
+---
+
+## Why This Project Is Hard
+
+- Non-deterministic AI output under strict system guarantees  
+- Invariant-preserving roadmap evolution  
+- Multi-layer validation before persistence  
+- Adaptive task injection under phase constraints  
+- Failure-first system design  
+- Floating-point stability in skill modeling  
+
+SkillForgeAI is engineered as a **state machine**, not a feature app.
+
+---
+
+## Setup Instructions
+
+### Backend
+```bash
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+### Frontend
+```bash
+npm install
+npm run dev
+```
+
+---
+
+## Roadmap
+
+- [ ] Architecture diagrams & lifecycle visuals
+- [ ] Public demo deployment
+- [ ] Observability dashboard
+- [ ] Stress testing and adversarial simulation
+- [ ] Multi-track learning engines
+
+---
+
+## Author
+
+Built and architected by **Mohamed Fateen** Focus: backend systems, invariant design, and AI governance.
 
 ## License
 
-This project is licensed under the MIT License.
+MIT
