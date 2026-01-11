@@ -1,0 +1,270 @@
+skill: bit_manipulation
+version: v1
+description: 'Direct bit-level manipulation curriculum. Focuses on binary representation,
+  logical operators, and memory-efficient flags.
+
+  '
+slots:
+- slot_id: BIT_SLOT_1_BINARY_MODEL
+  mental_install: Data is stored as a sequence of high/low voltages (bits).
+  invariant: Value = sum(bit[i] * 2^i)
+  mastery_signals:
+  - Converts decimal to binary manually
+  - Explains Two's Complement for negative numbers
+  hard_failures:
+  - Doesn't understand the power-of-two mapping
+  templates:
+  - id: bit_s1_binary_conv
+    type: explanation
+    difficulty: easy
+    prompt: What is the binary representation of 13?
+    rubric: Must show 1101 (8 + 4 + 1).
+    concepts:
+    - binary_representation
+  - id: bit_s1_range_unsigned
+    type: mcq
+    difficulty: easy
+    prompt: What is the maximum value that can be stored in an 8-bit unsigned integer?
+    options:
+    - '127'
+    - '128'
+    - '255'
+    - '256'
+    correct_answer: 2
+    concepts:
+    - binary_limits
+    - bits
+  - id: bit_s1_remediation_weights
+    type: explanation
+    variant: remediation
+    difficulty: easy
+    prompt: 'Remember bit positions have weights: 1, 2, 4, 8, 16...
+
+      Binary 1011 is (1*8) + (0*4) + (1*2) + (1*1) = 11.
+
+      '
+    concepts:
+    - mental_model
+    - bit_weights
+- slot_id: BIT_SLOT_2_BASIC_OPS
+  mental_install: AND, OR, XOR, and NOT are bitwise primitives.
+  invariant: Bitwise ops apply independently to each bit position.
+  mastery_signals:
+  - Predicts result of 5 & 3, 5 | 3, 5 ^ 3
+  hard_failures:
+  - Confuses logical && with bitwise &
+  templates:
+  - id: bit_s2_logical_ops
+    type: coding
+    difficulty: easy
+    prompt: Compute (a AND b) XOR c bitwise.
+    language: python
+    starter_code: "def solve(a, b, c):\n    pass\n"
+    concepts:
+    - bitwise_operators
+  - id: bit_s2_mcq_xor_prop
+    type: mcq
+    difficulty: medium
+    prompt: What is the result of `x ^ x` for any integer x?
+    options:
+    - x
+    - '0'
+    - '1'
+    - '-1'
+    correct_answer: 1
+    concepts:
+    - xor_properties
+    - bitwise_logic
+  - id: bit_s2_truth_tables
+    type: explanation
+    difficulty: easy
+    prompt: 'Explain the difference between OR (|) and XOR (^) using their truth tables.
+
+      '
+    rubric: Must mention that XOR is 0 when both bits are 1, while OR is 1.
+    concepts:
+    - truth_tables
+    - logic
+  - id: BIT_SLOT_2_BASIC_OPS_remediation
+    type: explanation
+    variant: remediation
+    difficulty: easy
+    prompt: Use light switches and bit masks to show turning bits on/off.
+    concepts:
+    - mental_model
+- slot_id: BIT_SLOT_3_MASKING
+  mental_install: A 'mask' is a bit pattern used to isolate or toggle specific bits.
+  invariant: val & (1 << i) checks if the i-th bit is set.
+  mastery_signals:
+  - Sets, clears, and toggles specific bits
+  hard_failures:
+  - Incorrect shift direction (>> vs <<)
+  templates:
+  - id: bit_s3_set_bit
+    type: coding
+    difficulty: medium
+    prompt: Set the k-th bit of n to 1 and return the result.
+    language: python
+    starter_code: "def solve(n, k):\n    pass\n"
+    concepts:
+    - masking
+    - shifting
+  - id: bit_s3_check_bit
+    type: explanation
+    difficulty: medium
+    role: diagnostic
+    prompt: 'How do you check if the 3rd bit (index 2) of a number `x` is set?
+
+      Provide the code expression and explain why it works.
+
+      '
+    rubric: Must use `x & (1 << 2)`. Explain that (1 << 2) creates 0...0100 and AND
+      isolates that position.
+    concepts:
+    - logical_and
+    - bit_isolation
+  - id: bit_s3_clear_bit
+    type: coding
+    difficulty: medium
+    prompt: Clear the k-th bit of n (set it to 0) and return the result.
+    language: python
+    starter_code: "def clear_bit(n, k):\n    pass\n"
+    concepts:
+    - bitwise_not
+    - logical_and
+  - id: bit_s3_remediation_flashlight
+    type: explanation
+    variant: remediation
+    difficulty: easy
+    prompt: "Think of a mask as a flashlight. \nBinary `1101` and mask `0100` is like\
+      \ shining a light only on the second-to-last bit. \nIf the result is non-zero,\
+      \ the light hit something (the bit was set).\n"
+    concepts:
+    - analogy
+    - masking
+- slot_id: BIT_SLOT_4_HAMMING_WEIGHT
+  mental_install: Hamming weight is the number of set bits (1s) in a number.
+  invariant: val &= (val - 1) removes the lowest set bit.
+  mastery_signals:
+  - Implements Kernighan's algorithm
+  - Compares O(bits) vs O(set_bits) efficiency
+  hard_failures:
+  - Loops indefinitely (e.g. if num is negative in some languages)
+  - Doesn't handle zero correctly
+  templates:
+  - id: bit_s4_count_bits
+    type: coding
+    difficulty: medium
+    prompt: Write a function to count the number of 1 bits in an integer.
+    language: python
+    starter_code: "def count_set_bits(n):\n    pass\n"
+    concepts:
+    - hamming_weight
+    - iteration
+  - id: bit_s4_trick_logic
+    type: explanation
+    difficulty: hard
+    role: diagnostic
+    prompt: 'Explain why `n & (n - 1)` removes the lowest set bit of `n`.
+
+      '
+    rubric: Must explain that n-1 flips the lowest 1 and all zeros after it. ANDing
+      them clears those specific bits.
+    concepts:
+    - bit_tricks
+    - logic_analysis
+  - id: bit_s4_mcq_efficiency
+    type: mcq
+    difficulty: medium
+    prompt: If a number has 10 set bits but is 64 bits wide, how many iterations does
+      `n = n & (n-1)` take to reach zero?
+    options:
+    - '64'
+    - '10'
+    - '32'
+    - '1'
+    correct_answer: 1
+    concepts:
+    - algorithm_efficiency
+    - bit_tricks
+  - id: BIT_SLOT_4_HAMMING_WEIGHT_remediation
+    type: explanation
+    variant: remediation
+    difficulty: easy
+    prompt: Use light switches and bit masks to show turning bits on/off.
+    concepts:
+    - mental_model
+- slot_id: BIT_SLOT_5_POWER_OF_TWO
+  mental_install: A power of two has exactly one bit set in binary.
+  invariant: (n > 0) && (n & (n - 1) == 0)
+  mastery_signals:
+  - Validates powers of two instantly
+  - Understands binary structure of 2, 4, 8, 16...
+  hard_failures:
+  - Doesn't handle n <= 0
+  - Overcomplicates with loops or log functions
+  templates:
+  - id: bit_s5_check_power
+    type: coding
+    difficulty: easy
+    prompt: Is the number `n` a power of two? Return a boolean.
+    language: python
+    starter_code: "def is_power_of_two(n):\n    pass\n"
+    concepts:
+    - power_of_two
+    - bit_tricks
+  - id: bit_s5_remediation_visual
+    type: explanation
+    variant: remediation
+    difficulty: easy
+    prompt: 'Powers of 2 in binary always look like a ''1'' followed by only zeros.
+
+      2 = 10
+
+      4 = 100
+
+      8 = 1000
+
+      If you see more than one ''1'', it''s NOT a power of two.
+
+      '
+    concepts:
+    - visual_pattern
+- slot_id: BIT_SLOT_6_BIT_HACKING
+  mental_install: Bit manipulation can solve complex puzzles (finding singles, swapping)
+    without extra space.
+  invariant: x ^ x = 0; x ^ 0 = x; order invariant.
+  mastery_signals:
+  - Solves "Single Number" problem using XOR
+  - Swaps two numbers without a temp variable
+  hard_failures:
+  - Cannot explain why XOR works for finding orphans
+  - Doesn't handle overflow risks (in arithmetic swaps)
+  templates:
+  - id: bit_s6_single_number
+    type: coding
+    difficulty: hard
+    prompt: "Given an array where every element appears twice except for one, \nfind\
+      \ that single number using O(1) space.\n"
+    language: python
+    starter_code: "def find_single(nums):\n    pass\n"
+    concepts:
+    - xor_properties
+    - space_optimization
+  - id: bit_s6_xor_swap_diagnostic
+    type: explanation
+    difficulty: hard
+    prompt: "How does `a = a ^ b; b = a ^ b; a = a ^ b;` swap two numbers? \nExplain\
+      \ the logic at each step.\n"
+    rubric: Must mention how XOR stores the delta and then extracts the original values
+      back.
+    concepts:
+    - xor_swap
+    - bitwise_algebra
+  - id: BIT_SLOT_6_BIT_HACKING_remediation
+    type: explanation
+    variant: remediation
+    difficulty: easy
+    prompt: Use light switches and bit masks to show turning bits on/off.
+    concepts:
+    - mental_model

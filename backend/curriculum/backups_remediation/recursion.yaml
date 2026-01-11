@@ -1,0 +1,222 @@
+skill: recursion
+version: v1
+description: >
+  Foundational recursion curriculum. Focuses on the call stack, base cases,
+  and the transformation of problems into self-similar subproblems.
+
+slots:
+  - slot_id: RECURSION_SLOT_1_CALL_STACK
+    mental_install: "Each function call creates a new environment (frame) on the system stack."
+    invariant: "The LIFO nature of the stack determines execution order."
+    mastery_signals:
+      - Explains Stack Overflow
+      - Traces return values back through the stack
+      - Identifies local variable isolation in each frame
+    hard_failures:
+      - Thinks recursion is magic (cannot explain the physical mechanism)
+      - Fails to realize local variables are distinct across calls
+
+    templates:
+      - id: recursion_s1_stack_trace
+        type: explanation
+        difficulty: easy
+        prompt: |
+          A recursive function `f(3)` calls `f(2)`, which calls `f(1)`.
+          `f(1)` returns 10. Trace how 10 gets back to the original caller.
+        rubric: "Must mention the 'popping' of the stack and return path."
+        concepts: [call_stack, activation_records]
+
+      - id: recursion_s1_stack_overflow_cause
+        type: mcq
+        difficulty: easy
+        prompt: "What is the primary cause of a 'Stack Overflow' in a recursive function?"
+        options:
+          - "The computer ran out of hard drive space"
+          - "The recursion reached its base case too many times"
+          - "Too many function calls were made without returning, filling the allocated memory for the stack"
+          - "The function returned a value that was too large for an integer"
+        correct_answer: 2
+        concepts: [stack_overflow, memory_limits]
+
+      - id: recursion_s1_visualize_frames
+        type: explanation
+        difficulty: medium
+        prompt: |
+          ```python
+          def greet(n):
+              if n == 0: return
+              x = f"Hello {n}"
+              greet(n-1)
+              print(x)
+          ```
+          If you call `greet(2)`, which message is printed first: "Hello 1" or "Hello 2"? Explain why using the stack model.
+        rubric: "Must identify 'Hello 1' prints first. Explain that because 'print' is AFTER the recursive call, it executes as the stack 'unwinds'."
+        concepts: [stack_unwinding, execution_order]
+
+  - slot_id: RECURSION_SLOT_2_BASE_CASES
+    mental_install: "Recursion must eventually reach a trivial case that doesn't recurse."
+    invariant: "Progress must be made toward the base case in every step."
+    mastery_signals:
+      - Identifies missing base cases
+      - Ensures recursive parameters converge
+    hard_failures:
+      - Infinite recursion (forgot base case)
+      - Parameter never changes
+
+    templates:
+      - id: recursion_s2_find_bug
+        type: explanation
+        difficulty: easy
+        prompt: |
+          Why does this code crash for n > 0?
+          ```python
+          def countdown(n):
+              print(n)
+              countdown(n)
+          ```
+        rubric: "Must identify missing progress (n remains constant) or missing base case."
+        concepts: [base_case, convergence]
+
+      - id: recursion_s2_mcq_progress
+        type: mcq
+        difficulty: easy
+        prompt: "Which recursive call correctly progresses toward the base case `if n == 0:`?"
+        options:
+          - "return f(n)"
+          - "return f(n + 1)"
+          - "return f(n - 1)"
+          - "return f(n * 2)"
+        correct_answer: 2
+        concepts: [convergence, base_case]
+
+      - id: recursion_s2_remediation_halt
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          Think of recursion like a ladder. The base case is the ground.
+          To stop, every step you take MUST bring you closer to the ground.
+          If `countdown(5)` calls `countdown(5)`, you stay on the same rung forever!
+        concepts: [mental_model, halting_problem]
+
+  - slot_id: RECURSION_SLOT_3_TAIL_RECURSION
+    mental_install: "Tail recursion occurs when the recursive call is the very last action."
+    invariant: "No instructions remain after the recursive call returns."
+    mastery_signals:
+      - Differentiates between tail and non-tail recursion
+      - Understands tail-call optimization (TCO)
+      - Refactors non-tail into tail using accumulators
+    hard_failures:
+      - Thinks adding a value after the call is still tail recursive
+      - Cannot identify TCO benefits
+
+    templates:
+      - id: recursion_s3_identify_tail
+        type: mcq
+        difficulty: medium
+        prompt: "Which of these functions is TAIL recursive?"
+        options:
+          - "def f(n): return n + f(n-1)"
+          - "def f(n): return f(n-1) * 2"
+          - "def f(n, acc): if n==0: return acc; return f(n-1, acc+n)"
+          - "def f(n): f(n-1); print(n)"
+        correct_answer: 2
+        concepts: [tail_recursion]
+
+      - id: recursion_s3_accumulator_refactor
+        type: coding
+        difficulty: medium
+        prompt: |
+          Refactor this non-tail recursive factorial into a tail-recursive version 
+          using an accumulator.
+          ```python
+          def fact(n):
+              if n == 0: return 1
+              return n * fact(n-1)
+          ```
+        language: python
+        starter_code: |
+          def factorial(n, acc=1):
+              pass
+        concepts: [accumulators, tail_recursion_refactoring]
+
+  - slot_id: RECURSION_SLOT_4_RECURRENCE_RELATION
+    mental_install: "Recurrence relations mathematical describe recursive time complexity."
+    invariant: "T(N) = Work_per_level + T(N_remaining)"
+    mastery_signals:
+      - Sets up T(N) for Binary Search, Merge Sort, and Factorial
+      - Uses basic Master Theorem cases
+    hard_failures:
+      - Cannot map code structure to T(N) expression
+
+    templates:
+      - id: recursion_s4_mcq_binary_search_relation
+        type: mcq
+        difficulty: medium
+        prompt: "Which recurrence relation describes Binary Search?"
+        options:
+          - "T(N) = T(N-1) + O(1)"
+          - "T(N) = 2T(N/2) + O(N)"
+          - "T(N) = T(N/2) + O(1)"
+          - "T(N) = 2T(N/2) + O(1)"
+        correct_answer: 2
+        concepts: [recurrence_relations, binary_search]
+
+      - id: recursion_s4_derivation_explanation
+        type: explanation
+        difficulty: hard
+        prompt: |
+          Derive the time complexity of a recursive Fibonacci function:
+          `fib(n) = fib(n-1) + fib(n-2)`. Why is it O(2^N)?
+        rubric: "Must mention the doubling of work at each level of the recursion tree."
+        concepts: [complexity_analysis, recursion_trees]
+
+      - id: recursion_s4_remediation_tree
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          To find the total work, draw a 'Recursion Tree'. 
+          Each call is a branch. The total work is the sum of all nodes in that tree.
+          If every call splits in 2, the tree grows very fast ($2^N$).
+        concepts: [recursion_trees, visual_complexity]
+
+  - slot_id: RECURSION_SLOT_3_TAIL_RECURSION
+    mental_install: "Tail calls can be converted to loops if the recursive call is the very last operation."
+    invariant: "No computation remains after the recursive return."
+    mastery_signals:
+      - Distinguishes tail from non-tail recursion
+    hard_failures:
+      - Fails to identify 'accumulated' state in tail recursion
+
+    templates:
+      - id: recursion_s3_mcq_tail
+        type: mcq
+        difficulty: medium
+        prompt: "Which of these is a tail-recursive function?"
+        options:
+          - "def f(n): return n + f(n-1)"
+          - "def f(n, acc): if n==0: return acc; return f(n-1, acc+n)"
+          - "def f(n): if n==0: return 1; return n * f(n-1)"
+          - "def f(n): f(n-1); print(n)"
+        correct_answer: 1
+        concepts: [tail_recursion, accumulation]
+
+  - slot_id: RECURSION_SLOT_4_RECURRENCE_RELATION
+    mental_install: "Recursive logic is a mathematical recurrence: T(n) = T(n-1) + C."
+    invariant: "Code structure mirrors the mathematical definition."
+    mastery_signals:
+      - Writes a recursive factorial or fibonacci correctly
+    hard_failures:
+      - Incorrect indices in recurrence (e.g., f(n) = f(n-1) + f(n))
+
+    templates:
+      - id: recursion_s4_factorial
+        type: coding
+        difficulty: easy
+        prompt: "Write a recursive function to calculate n! (factorial)."
+        language: python
+        starter_code: |
+          def factorial(n):
+              pass
+        concepts: [recurrence, base_case]

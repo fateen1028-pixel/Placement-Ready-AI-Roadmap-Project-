@@ -24,6 +24,9 @@ slots:
       - id: hash_s1_explain
         type: explanation
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [hashing, mapping]
+        probe_cost: 0.8
         prompt: |
           What is hashing and why are collisions unavoidable?
         rubric: "Must reference pigeonhole principle and mapping."
@@ -32,6 +35,9 @@ slots:
       - id: hash_s1_remediation
         base_id: hash_s1_explain
         type: explanation
+        role: reinforcement
+        invariant_targets: [hash_tables]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -42,6 +48,9 @@ slots:
       - id: hash_s1_mcq_mapping
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [collisions, hashing]
+        probe_cost: 0.5
         prompt: "If multiple keys map to the same index in a hash table, what is this event called?"
         options:
           - "Hash Fragmentation"
@@ -55,6 +64,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [mapping]
+        probe_cost: 0.5
         prompt: |
           A collision happens when different keys produce the same hash index. 
           Since the number of possible keys is almost always larger than the 
@@ -79,6 +91,9 @@ slots:
       - id: hash_s2_two_sum
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [hashing, constant_lookup]
+        probe_cost: 1.2
         prompt: "Solve Two Sum using a hash map."
         language: python
         starter_code: |
@@ -89,6 +104,9 @@ slots:
       - id: hash_s2_remediation
         base_id: hash_s2_two_sum
         type: explanation
+        role: reinforcement
+        invariant_targets: [hash_tables]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -98,6 +116,9 @@ slots:
       - id: hash_s2_mcq_lookup
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [complexity, constant_time]
+        probe_cost: 0.5
         prompt: "What is the expected time complexity for looking up a key in a well-designed hash table?"
         options:
           - "O(1)"
@@ -111,6 +132,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [lookup_speed]
+        probe_cost: 0.5
         prompt: |
           By directly calculating the address (index) from the key, a hash table 
           allows us to jump straight to the data without scanning, providing 
@@ -135,6 +159,9 @@ slots:
       - id: hash_s3_frequency
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [frequency_map, indexing]
+        probe_cost: 1.2
         prompt: "Return the first non-repeating character."
         language: python
         starter_code: |
@@ -145,6 +172,9 @@ slots:
       - id: hash_s3_remediation
         base_id: hash_s3_frequency
         type: explanation
+        role: reinforcement
+        invariant_targets: [hash_tables]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -154,6 +184,9 @@ slots:
       - id: hash_s3_mcq_frequency
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [frequency_counting, flexibility]
+        probe_cost: 0.5
         prompt: "Why is a hash map better than an array for counting frequencies of arbitrary words?"
         options:
           - "Arrays cannot store numbers"
@@ -167,6 +200,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [dynamic_growth]
+        probe_cost: 0.5
         prompt: |
           Arrays require integer indices and a fixed size. A hash map can handle 
           any object (like a word) as a key and grows as needed to accommodate 
@@ -190,6 +226,9 @@ slots:
       - id: hash_s4_chaining_vs_probing
         type: explanation
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [probing, chaining, memory]
+        probe_cost: 0.8
         prompt: |
           Compare Chaining and Linear Probing. Which one is better when memory is tight, and why?
         rubric: "Must mention pointer overhead and cache locality."
@@ -198,6 +237,9 @@ slots:
       - id: hash_s4_remediation
         base_id: hash_s4_chaining_vs_probing
         type: explanation
+        role: reinforcement
+        invariant_targets: [hash_tables]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -208,6 +250,9 @@ slots:
       - id: hash_s4_mcq_chaining
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [chaining, data_structures]
+        probe_cost: 0.5
         prompt: "In collision resolution by 'Chaining', what is stored at each index of the hash table?"
         options:
           - "The value itself"
@@ -221,6 +266,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [indirection]
+        probe_cost: 0.5
         prompt: |
           Chaining handles collisions by putting all 'colliding' items into a 
           separate list attached to that index. We follow the list to find our 
@@ -245,6 +293,9 @@ slots:
       - id: hash_s5_resizing_logic
         type: explanation
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [load_factor, rehashing, amortized_analysis]
+        probe_cost: 0.8
         prompt: |
           Explain why we double the hash table and re-insert all elements when the load factor is exceeded. 
           Why can't we just use the old indices?
@@ -254,6 +305,9 @@ slots:
       - id: hash_s5_remediation
         base_id: hash_s5_resizing_logic
         type: explanation
+        role: reinforcement
+        invariant_targets: [hash_tables]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -263,6 +317,9 @@ slots:
       - id: hash_s5_mcq_resize
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [rehashing, load_factor]
+        probe_cost: 0.5
         prompt: "Why must we re-calculate the index (rehash) for all elements when a hash table is resized?"
         options:
           - "To clear the memory"
@@ -276,6 +333,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [mapping_dependency]
+        probe_cost: 0.5
         prompt: |
           If your address formula is `key % current_size`, changing the `size` 
           means the same `key` now points to a completely different address. 
@@ -300,6 +360,9 @@ slots:
       - id: hash_s6_group_anagrams
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [canonical_keys, grouping]
+        probe_cost: 1.2
         prompt: "Group a list of strings into anagram sets."
         language: python
         starter_code: |
@@ -310,6 +373,9 @@ slots:
       - id: hash_s6_remediation
         base_id: hash_s6_group_anagrams
         type: explanation
+        role: reinforcement
+        invariant_targets: [hash_tables]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -319,6 +385,9 @@ slots:
       - id: hash_s6_mcq_canonical
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [canonical_keys, grouping]
+        probe_cost: 0.5
         prompt: "What is a 'canonical key' in the context of grouping anagrams?"
         options:
           - "The first string in the group"
@@ -332,6 +401,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [normalization]
+        probe_cost: 0.5
         prompt: |
           To group similar things, they need a 'common name'. By sorting the 
           letters, 'eat', 'tea', and 'ate' all get the same name: 'aet'.
@@ -355,6 +427,9 @@ slots:
       - id: hash_s7_subarray_sum
         type: coding
         difficulty: hard
+        role: stretch
+        invariant_targets: [prefix_sum, math_mapping]
+        probe_cost: 1.2
         prompt: "Find the total number of subarrays whose sum equals $k$."
         language: python
         starter_code: |
@@ -365,6 +440,9 @@ slots:
       - id: hash_s7_remediation
         base_id: hash_s7_subarray_sum
         type: explanation
+        role: reinforcement
+        invariant_targets: [hash_tables]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -374,6 +452,9 @@ slots:
       - id: hash_s7_mcq_prefix_hash
         type: mcq
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [prefix_sum, boundary_cases]
+        probe_cost: 0.5
         prompt: "Why do we initialize our hash map with {0: 1} when solving the 'Subarray Sum Equals K' problem?"
         options:
           - "To handle the case where a prefix sum exactly equals K"
@@ -387,6 +468,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [zero_prefix]
+        probe_cost: 0.5
         prompt: |
           If a subarray starting from the very first element (index 0) sums to K, 
           then `CurrentSum - K = 0`. We need the map to know that a prefix of 
@@ -410,6 +494,9 @@ slots:
       - id: hash_s8_intersection
         type: coding
         difficulty: easy
+        role: proof
+        invariant_targets: [set_operations, existence]
+        probe_cost: 1.0
         prompt: "Compute the intersection of two arrays (unique elements)."
         language: python
         starter_code: |
@@ -420,6 +507,9 @@ slots:
       - id: hash_s8_remediation
         base_id: hash_s8_intersection
         type: explanation
+        role: reinforcement
+        invariant_targets: [hash_tables]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -429,6 +519,9 @@ slots:
       - id: hash_s8_mcq_existence
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [set_operations, complexity]
+        probe_cost: 0.5
         prompt: "If you have two arrays of size N, what is the best time complexity for finding their intersection using a Set?"
         options:
           - "$O(N^2)$"
@@ -442,6 +535,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [time_complexity]
+        probe_cost: 0.5
         prompt: |
           By putting the first array into a Set (O(N)), we can check every element 
           of the second array in O(1) time each. Total work is linear!
@@ -464,6 +560,9 @@ slots:
       - id: hash_s9_design_hashset
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [implementation, buckets]
+        probe_cost: 1.2
         prompt: "Design a HashSet without using built-in libraries."
         language: python
         starter_code: |
@@ -480,6 +579,9 @@ slots:
       - id: hash_s9_remediation
         base_id: hash_s9_design_hashset
         type: explanation
+        role: reinforcement
+        invariant_targets: [hash_tables]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -489,6 +591,9 @@ slots:
       - id: hash_s9_mcq_buckets
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [hashing_function]
+        probe_cost: 0.5
         prompt: "In a manual HashSet implementation, why do we use `key % array_size`?"
         options:
           - "To simplify the number"
@@ -502,6 +607,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [modulo_math]
+        probe_cost: 0.5
         prompt: |
           The modulo operator (%) acts like a 'wrapping' function, ensuring 
           no matter how big the key is, it 'lands' inside our array's capacity.
@@ -524,6 +632,9 @@ slots:
       - id: hash_s10_isomorphic
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [mappings, consistency]
+        probe_cost: 1.2
         prompt: "Determine if two strings are isomorphic."
         language: python
         starter_code: |
@@ -534,6 +645,9 @@ slots:
       - id: hash_s10_remediation
         base_id: hash_s10_isomorphic
         type: explanation
+        role: reinforcement
+        invariant_targets: [hash_tables]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -543,6 +657,9 @@ slots:
       - id: hash_s10_mcq_bijective
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [bijective_mapping]
+        probe_cost: 0.5
         prompt: "If string S is 'abc' and string T is 'ddd', why is this NOT isomorphic?"
         options:
           - "Because the strings have different lengths"
@@ -556,6 +673,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [surjection]
+        probe_cost: 0.5
         prompt: |
           Isomorphism requires a 1-to-1 relationship. If three different letters 
           all point to 'd', we can't reliably go backwards from 'd' to a 
@@ -579,6 +699,9 @@ slots:
       - id: hash_s11_lru_model
         type: explanation
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [lru, data_composition]
+        probe_cost: 0.8
         prompt: |
           How does combining a Hash Table and a Doubly Linked List enable an LRU Cache to perform 
           get and put in constant time?
@@ -588,6 +711,9 @@ slots:
       - id: hash_s11_remediation
         base_id: hash_s11_lru_model
         type: explanation
+        role: reinforcement
+        invariant_targets: [hash_tables]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -597,6 +723,9 @@ slots:
       - id: hash_s11_mcq_lru_structure
         type: mcq
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [data_composition, pointers]
+        probe_cost: 0.5
         prompt: "In an O(1) LRU implementation, what exactly does the Hash Map store as its 'Value'?"
         options:
           - "The actual data integer"
@@ -610,6 +739,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [optimization]
+        probe_cost: 0.5
         prompt: |
           The Map lets us 'teleport' directly to the specific node in the middle 
           of the Linked List. Without the pointer, we'd have to search the list 
@@ -634,6 +766,9 @@ slots:
       - id: hash_s12_top_k
         type: coding
         difficulty: hard
+        role: stretch
+        invariant_targets: [frequency_maps, bucket_sort, optimization]
+        probe_cost: 1.2
         prompt: "Given an integer array nums and an integer k, return the k most frequent elements."
         language: python
         starter_code: |
@@ -645,6 +780,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: hard
+        role: reinforcement
+        invariant_targets: [bucket_logic]
+        probe_cost: 0.5
         prompt: |
           Think of 'Frequency Buckets'. 
           1. Count the elements using a hash map.
@@ -655,6 +793,9 @@ slots:
       - id: hash_s12_mcq_bucket_vs_heap
         type: mcq
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [algorithm_selection, complexity]
+        probe_cost: 0.5
         prompt: "When is Bucket Sort (using frequency) more efficient than a Heap for finding the Top K elements?"
         options:
           - "When the range of frequencies is small compared to N"
@@ -668,6 +809,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [optimal_complexity]
+        probe_cost: 0.5
         prompt: |
           Bucket sort based on frequency takes $O(N)$ because the maximum 
           frequency is $N$. Sorting or using a heap $(O(N \log K))$ is 

@@ -72,11 +72,8 @@ export default function McqTaskPage({ params, searchParams }) {
       const evalData = result.evaluation;
       setEvaluation(evalData);
 
-      if (evalData?.passed) {
-        setTimeout(() => {
-           router.push("/dashboard/roadmap");
-        }, 2000);
-      }
+      // Immediately redirect after submission regardless of pass/fail
+      router.push("/dashboard");
     } catch (error) {
       console.error("Failed to submit:", error);
       const errorMessage = error.response?.data?.detail || error.response?.data?.message || "Submission failed. Please check your connection and try again.";

@@ -1,10 +1,16 @@
-from typing import List, Optional, Literal
+from typing import List, Optional, Literal, Dict, Union
 from pydantic import BaseModel, Field
 
 class SlotMasteryPolicy(BaseModel):
     pass_score: float = 0.6
     min_confidence: float = 0.0
     invariants_required: List[str] = Field(default_factory=list)
+
+class SlotGovernancePolicy(BaseModel):
+    entry_requirements: Dict[str, Union[float, str]] = Field(default_factory=dict)
+    reinforce_if: Dict[str, Union[float, str]] = Field(default_factory=dict)
+    skip_if: Dict[str, Union[float, str]] = Field(default_factory=dict)
+    promote_if: Dict[str, Union[float, str]] = Field(default_factory=dict)
 
 class SlotRemediationPolicy(BaseModel):
     max_attempts: int = 3
@@ -21,6 +27,7 @@ class SlotDefinition(BaseModel):
     
     # Policy Fields
     mastery: SlotMasteryPolicy = Field(default_factory=SlotMasteryPolicy)
+    governance: SlotGovernancePolicy = Field(default_factory=SlotGovernancePolicy)
     remediation: SlotRemediationPolicy = Field(default_factory=SlotRemediationPolicy)
     unlocks: List[str] = Field(default_factory=list)
     

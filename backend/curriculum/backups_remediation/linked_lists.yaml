@@ -1,0 +1,865 @@
+skill: linked_lists
+version: v1
+description: >
+  Linked list curriculum focused on indirection, pointer traversal,
+  structural mutation, and loss of random access.
+
+slots:
+
+# =========================================================
+# SLOT 0 — THE POINTER MODEL & INDIRECT ADDRESSING
+# =========================================================
+
+  - slot_id: LINKED_LIST_SLOT_0_POINTER_MODEL
+    mental_install: "Addresses are data; a pointer 'points' to a location in the heap."
+    invariant: "Indirection cost > direct index math."
+    mastery_signals:
+      - Explains the difference between a variable and a reference
+      - Predicts behavior of manual memory jumps
+      - Describes why linked lists don't store objects 'next' to each other
+    hard_failures:
+      - Thinks pointers store the actual data
+      - Confuses pointer value with pointed-to value
+
+    templates:
+      - id: ll_s0_reference_behavior
+        type: explanation
+        difficulty: easy
+        prompt: |
+          If `a = [1]` and `b = a`, then `a.append(2)`. 
+          What is `b`? Explain using the concept of memory addresses.
+        rubric: "Must mention that 'a' and 'b' point to the same address."
+        concepts: [references, memory_addresses]
+
+      - id: ll_s0_mcq_indirection
+        type: mcq
+        difficulty: easy
+        prompt: "Why is accessing the 10th element in a Linked List slower than in an Array?"
+        options:
+          - "Linked lists are stored on slower hardware"
+          - "Arrays use magic to find elements"
+          - "The CPU cannot compute the 10th address without visiting the 9th"
+          - "Linked list nodes are larger"
+        correct_answer: 2
+        concepts: [indirection, memory_model]
+
+# =========================================================
+# SLOT 1 — NODE & POINTER MODEL
+# =========================================================
+
+  - slot_id: LINKED_LIST_SLOT_1_NODE_MODEL
+    mental_install: "Data is stored in nodes; order is maintained by pointers."
+    invariant: "Traversal required to reach any position."
+    mastery_signals:
+      - Explains node structure
+      - Draws memory diagrams
+      - Accepts non-contiguity
+    hard_failures:
+      - Thinks index access exists
+      - Confuses with arrays
+      - Breaks pointer logic
+
+    templates:
+      - id: ll_s1_node_define
+        type: coding
+        difficulty: easy
+        role: proof
+        invariant_targets: [nodes, pointers]
+        probe_cost: 1.0
+        prompt: "Define a Node class and create a 3-node list."
+        language: python
+        starter_code: |
+          class Node:
+              pass
+        concepts: [nodes, pointers]
+
+      - id: ll_s1_remediation
+        base_id: ll_s1_node_define
+        type: explanation
+        role: reinforcement
+        invariant_targets: [linked_lists]
+        probe_cost: 0.5
+        variant: remediation
+        strategy: explanation
+        prompt: |
+          Visualize a 'Node' as a box with a value and a remote control (pointer) to the next box. 
+          Explain why knowing the location of box A doesn't tell you the location of box C without following the remote controls.
+
+      - id: ll_s1_mcq_pointers
+        type: mcq
+        difficulty: easy
+        role: diagnostic
+        invariant_targets: [nodes, pointers, indirection]
+        probe_cost: 0.5
+        prompt: "What does the 'next' attribute of a Node store?"
+        options:
+          - "The value of the next node"
+          - "The memory address (reference) of the next node"
+          - "The index of the next node in an array"
+          - "The total number of nodes in the list"
+        correct_answer: 1
+        concepts: [nodes, pointers, indirection]
+
+      - id: ll_s1_remediation_mcq
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        role: reinforcement
+        invariant_targets: [references]
+        probe_cost: 0.5
+        prompt: |
+          A linked list node doesn't 'contain' the next node; it only points to 
+          where the next node lives in memory. If 'next' is None, there is no 
+          following node.
+        concepts: [references]
+
+# =========================================================
+# SLOT 2 — TRAVERSAL & SEARCH
+# =========================================================
+
+  - slot_id: LINKED_LIST_SLOT_2_TRAVERSAL
+    mental_install: "Traversal is the only access mechanism."
+    invariant: "Next pointer defines reachability."
+    mastery_signals:
+      - Iterates safely
+      - Detects null
+      - Counts nodes
+    hard_failures:
+      - Infinite loops
+      - Skips nodes
+      - Breaks head
+
+    templates:
+      - id: ll_s2_search
+        type: coding
+        difficulty: easy
+        role: proof
+        invariant_targets: [traversal]
+        probe_cost: 1.0
+        prompt: "Search for value x in a linked list."
+        language: python
+        starter_code: |
+          def solve(head, x):
+              pass
+        concepts: [traversal]
+
+      - id: ll_s2_remediation
+        base_id: ll_s2_search
+        type: explanation
+        role: reinforcement
+        invariant_targets: [linked_lists]
+        probe_cost: 0.5
+        variant: remediation
+        strategy: explanation
+        prompt: |
+          Review the 'while pointer is not None' loop pattern. 
+          Explain why 'curr = curr.next' is the engine of list traversal.
+
+      - id: ll_s2_mcq_lookup
+        type: mcq
+        difficulty: easy
+        role: diagnostic
+        invariant_targets: [traversal, complexity]
+        probe_cost: 0.5
+        prompt: "What is the time complexity to find an element at index 'k' in a singly linked list?"
+        options:
+          - "O(1)"
+          - "O(log k)"
+          - "O(k)"
+          - "O(n^2)"
+        correct_answer: 2
+        concepts: [traversal, complexity]
+
+      - id: ll_s2_remediation_mcq
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        role: reinforcement
+        invariant_targets: [sequential_access]
+        probe_cost: 0.5
+        prompt: |
+          Unlike arrays, linked lists do not support random access. To get to the 
+          'k-th' element, you must start at the head and follow exactly k 'next' 
+          pointers.
+        concepts: [sequential_access]
+
+# =========================================================
+# SLOT 3 — INSERTION & DELETION
+# =========================================================
+
+  - slot_id: LINKED_LIST_SLOT_3_INSERT_DELETE
+    mental_install: "Rewiring pointers mutates structure."
+    invariant: "No memory shifting; only reference updates."
+    mastery_signals:
+      - Correct pointer rewiring
+      - Preserves list
+      - Handles head deletion
+    hard_failures:
+      - Loses nodes
+      - Creates cycles accidentally
+      - Forgets next
+
+    templates:
+      - id: ll_s3_insert
+        type: coding
+        difficulty: medium
+        role: stretch
+        invariant_targets: [mutation]
+        probe_cost: 1.2
+        prompt: "Insert node at position k."
+        language: python
+        starter_code: |
+          def solve(head, k, x):
+              pass
+        concepts: [mutation]
+
+      - id: ll_s3_remediation
+        base_id: ll_s3_insert
+        type: explanation
+        role: reinforcement
+        invariant_targets: [linked_lists]
+        probe_cost: 0.5
+        variant: remediation
+        strategy: explanation
+        prompt: |
+          Explain the hazard of 'losing the tail'. 
+          Why must you connect 'NewNode.next = prev.next' BEFORE connecting 'prev.next = NewNode'?
+
+      - id: ll_s3_mcq_insertion
+        type: mcq
+        difficulty: medium
+        role: diagnostic
+        invariant_targets: [mutation, pointer_ordering]
+        probe_cost: 0.5
+        prompt: "If you want to insert a new node 'N' after node 'A', which order of pointer updates is correct?"
+        options:
+          - "A.next = N; N.next = A.next"
+          - "N.next = A.next; A.next = N"
+          - "A.next = A.next.next; N.next = A"
+          - "N.next = A; A = N"
+        correct_answer: 1
+        concepts: [mutation, pointer_ordering]
+
+      - id: ll_s3_remediation_mcq
+        type: explanation
+        variant: remediation
+        difficulty: medium
+        role: reinforcement
+        invariant_targets: [pointer_safety]
+        probe_cost: 0.5
+        prompt: |
+          If you set `A.next = N` first, you lose the reference to the rest 
+          of the list! You must first 'capture' the rest of the list by 
+          setting `N.next = A.next`.
+        concepts: [pointer_safety]
+
+# =========================================================
+# SLOT 4 — STRUCTURAL PATHOLOGIES
+# =========================================================
+
+  - slot_id: LINKED_LIST_SLOT_4_CYCLE_DETECTION
+    mental_install: "Pointers can create hidden structure."
+    invariant: "Traversal may not terminate."
+    mastery_signals:
+      - Implements Floyd's algorithm
+      - Explains fast/slow logic
+      - Identifies cycles
+    hard_failures:
+      - Relies on visited sets only
+      - Cannot explain invariant
+      - Infinite loops
+
+    templates:
+      - id: ll_s4_cycle
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [two_pointers, invariants]
+        probe_cost: 1.2
+        prompt: "Detect if a linked list has a cycle."
+        language: python
+        starter_code: |
+          def solve(head):
+              pass
+        concepts: [two_pointers, invariants]
+
+      - id: ll_s4_remediation
+        base_id: ll_s4_cycle
+        type: explanation
+        role: reinforcement
+        invariant_targets: [linked_lists]
+        probe_cost: 0.5
+        variant: remediation
+        strategy: explanation
+        prompt: |
+          Explain the 'Track Analogy'. 
+          If two runners start on a circular track and one runs twice as fast, 
+          show why they must eventually meet.
+
+      - id: ll_s4_mcq_cycle
+        type: mcq
+        difficulty: medium
+        role: diagnostic
+        invariant_targets: [cycles, fast_slow_pointers]
+        probe_cost: 0.5
+        prompt: "In Floyd's Cycle-Finding Algorithm, if the fast pointer moves at speed 2 and slow pointer at speed 1, what happens if there is a cycle?"
+        options:
+          - "The fast pointer will reach None"
+          - "The slow pointer will reach None"
+          - "The fast pointer will eventually equal the slow pointer"
+          - "They will both loop forever without meeting"
+        correct_answer: 2
+        concepts: [cycles, fast_slow_pointers]
+
+      - id: ll_s4_remediation_mcq
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        role: reinforcement
+        invariant_targets: [relative_speed]
+        probe_cost: 0.5
+        prompt: |
+          On a loop, the faster runner will eventually 'lap' the slower runner. 
+          When `fast == slow`, a cycle is confirmed.
+        concepts: [relative_speed]
+
+# =========================================================
+# SLOT 5 — IN-PLACE MUTATION
+# =========================================================
+
+  - slot_id: LINKED_LIST_SLOT_5_REVERSAL
+    mental_install: "List order can be inverted by flipping pointer directions in-place."
+    invariant: "The 'next' pointer of node $n$ becomes node $prev$."
+    mastery_signals:
+      - Uses three-pointer state (prev, curr, next)
+      - Correctly updates head at termination
+    hard_failures:
+      - Breaks the list into disconnected segments
+      - Creates a cycle between two nodes
+
+    templates:
+      - id: ll_s5_reverse
+        type: coding
+        difficulty: medium
+        role: stretch
+        invariant_targets: [in_place_mutation, pointers]
+        probe_cost: 1.2
+        prompt: "Reverse a singly linked list in-place."
+        language: python
+        starter_code: |
+          def reverseList(head):
+              pass
+        concepts: [in_place_mutation, pointers]
+
+      - id: ll_s5_remediation
+        base_id: ll_s5_reverse
+        type: explanation
+        role: reinforcement
+        invariant_targets: [linked_lists]
+        probe_cost: 0.5
+        variant: remediation
+        strategy: explanation
+        prompt: |
+          Trace the 'prev, curr, next' ballet. 
+          Show the state of all three pointers after one node has been flipped. 
+          Why is 'next' needed to keep the rest of the list from drifting away?
+
+      - id: ll_s5_mcq_reversal
+        type: mcq
+        difficulty: medium
+        role: diagnostic
+        invariant_targets: [in_place_mutation, state_management]
+        probe_cost: 0.5
+        prompt: "During in-place reversal, what is the purpose of the 'tmp_next' (or 'next') pointer?"
+        options:
+          - "To store the value of the next node"
+          - "To keep track of the node that will be processed AFTER the current node's pointer is flipped"
+          - "To point to the head of the new list"
+          - "To count the number of nodes"
+        correct_answer: 1
+        concepts: [in_place_mutation, state_management]
+
+      - id: ll_s5_remediation_mcq
+        type: explanation
+        variant: remediation
+        difficulty: medium
+        role: reinforcement
+        invariant_targets: [pointer_persistence]
+        probe_cost: 0.5
+        prompt: |
+          Once you change `curr.next = prev`, you no longer know where the 
+          original next node was. You must save it in a temporary variable 
+          before flipping the pointer.
+        concepts: [pointer_persistence]
+
+# =========================================================
+# SLOT 6 — SENTINEL / DUMMY NODES
+# =========================================================
+
+  - slot_id: LINKED_LIST_SLOT_6_DUMMY_NODES
+    mental_install: "A 'fake' head removes the need for special-case 'null head' logic."
+    invariant: "The real list begins at dummy.next."
+    mastery_signals:
+      - Simplifies deletion/insertion logic
+      - Returns dummy.next as result
+    hard_failures:
+      - Returns the dummy node itself in the output
+      - Forgets to initialize dummy's next pointer
+
+    templates:
+      - id: ll_s6_dummy_logic
+        type: explanation
+        difficulty: easy
+        role: diagnostic
+        invariant_targets: [sentinels, edges]
+        probe_cost: 0.8
+        prompt: |
+          Explain why using a 'Dummy' or 'Sentinel' node is helpful when deleting the head 
+          of a linked list or merging two lists.
+        rubric: "Must reference uniform edge-case handling and simplification of head pointers."
+        concepts: [sentinels, edges]
+
+      - id: ll_s6_remediation
+        base_id: ll_s6_dummy_logic
+        type: explanation
+        role: reinforcement
+        invariant_targets: [linked_lists]
+        probe_cost: 0.5
+        variant: remediation
+        strategy: explanation
+        prompt: |
+          Compare code with and without a dummy node for 'delete head'. 
+          Show how the dummy node removes the 'if head is None' branch from your main logic.
+
+      - id: ll_s6_mcq_sentinel
+        type: mcq
+        difficulty: easy
+        role: diagnostic
+        invariant_targets: [sentinels, return_values]
+        probe_cost: 0.5
+        prompt: "If you use a dummy node called 'dummy' to build a new list, what should your function return?"
+        options:
+          - "dummy"
+          - "dummy.next"
+          - "dummy.val"
+          - "None"
+        correct_answer: 1
+        concepts: [sentinels, return_values]
+
+      - id: ll_s6_remediation_mcq
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        role: reinforcement
+        invariant_targets: [dummy_nodes]
+        probe_cost: 0.5
+        prompt: |
+          The dummy node is just a placeholder. The actual data starts at 
+          `dummy.next`. Returning `dummy` itself would include the placeholder 
+          as the first element of your list.
+        concepts: [dummy_nodes]
+
+# =========================================================
+# SLOT 7 — SYNCHRONIZED TRAVERSAL
+# =========================================================
+
+  - slot_id: LINKED_LIST_SLOT_7_MERGE
+    mental_install: "Two streams can be merged by toggling a single pointer at each step."
+    invariant: "At each step, we choose the smaller current node and advance its stream."
+    mastery_signals:
+      - Handles unequal list lengths
+      - Correctly tacks on the remaining tail
+    hard_failures:
+      - Re-copies nodes instead of moving pointers
+      - Loses track of the merged tail
+
+    templates:
+      - id: ll_s7_merge
+        type: coding
+        difficulty: medium
+        role: stretch
+        invariant_targets: [traversal, streams]
+        probe_cost: 1.2
+        prompt: "Merge two sorted linked lists into one sorted list."
+        language: python
+        starter_code: |
+          def mergeTwoLists(list1, list2):
+              pass
+        concepts: [traversal, streams]
+
+      - id: ll_s7_remediation
+        base_id: ll_s7_merge
+        type: explanation
+        role: reinforcement
+        invariant_targets: [linked_lists]
+        probe_cost: 0.5
+        variant: remediation
+        strategy: explanation
+        prompt: |
+          Review the 'Tail Append' pattern. 
+          Explain why we don't need a loop to 'finish' a list once the other is empty—just link the tail once.
+
+      - id: ll_s7_mcq_merging
+        type: mcq
+        difficulty: medium
+        role: diagnostic
+        invariant_targets: [merging, efficiency]
+        probe_cost: 0.5
+        prompt: "When merging two sorted lists, what do you do when one list becomes empty?"
+        options:
+          - "Stop the process and return None"
+          - "Attach the remainder of the non-empty list directly to the merged list's tail"
+          - "Traverse the remaining list and add each node one by one"
+          - "Throw an error"
+        correct_answer: 1
+        concepts: [merging, efficiency]
+
+      - id: ll_s7_remediation_mcq
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        role: reinforcement
+        invariant_targets: [pointer_efficiency]
+        probe_cost: 0.5
+        prompt: |
+          Linking the entire remaining segment is O(1) inside a linked list. 
+          There is no need to iterate through it since the nodes are already 
+          sorted and linked!
+        concepts: [pointer_efficiency]
+
+# =========================================================
+# SLOT 8 — THE POINTER GAP (SLIDING WINDOW)
+# =========================================================
+
+  - slot_id: LINKED_LIST_SLOT_8_POINTER_GAP
+    mental_install: "Maintaining a fixed 'gap' between pointers allows single-pass distance measuring."
+    invariant: "Fast is exactly $n$ steps ahead of Slow."
+    mastery_signals:
+      - Implements $n$-th from end in one pass
+      - Handles $n = length$ (removing head) correctly
+    hard_failures:
+      - Performs an initial pass to count nodes (violates one-pass goal)
+
+    templates:
+      - id: ll_s8_remove_nth
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [two_pointers, spacing]
+        probe_cost: 1.2
+        prompt: "Remove the N-th node from the end of the list in one pass."
+        language: python
+        starter_code: |
+          def removeNthFromEnd(head, n):
+              pass
+        concepts: [two_pointers, spacing]
+
+      - id: ll_s8_remediation
+        base_id: ll_s8_remove_nth
+        type: explanation
+        role: reinforcement
+        invariant_targets: [linked_lists]
+        probe_cost: 0.5
+        variant: remediation
+        strategy: explanation
+        prompt: |
+          Explain why the 'Gap' works. 
+          If $Fast$ is $N$ steps ahead, why is it that when $Fast$ hits the end, $Slow$ is at exactly the right spot?
+
+      - id: ll_s8_mcq_gap
+        type: mcq
+        difficulty: medium
+        role: diagnostic
+        invariant_targets: [two_pointers, sliding_window]
+        probe_cost: 0.5
+        prompt: "If you want to find the 3rd node from the end in one pass, how many steps ahead of 'slow' should 'fast' start?"
+        options:
+          - "1"
+          - "2"
+          - "3"
+          - "4"
+        correct_answer: 2
+        concepts: [two_pointers, sliding_window]
+
+      - id: ll_s8_remediation_mcq
+        type: explanation
+        variant: remediation
+        difficulty: medium
+        role: reinforcement
+        invariant_targets: [spacing]
+        probe_cost: 0.5
+        prompt: |
+          If `fast` is 3 steps ahead, then when `fast` hits the end (None), 
+          `slow` will be exactly on the 3rd node from the end.
+        concepts: [spacing]
+
+# =========================================================
+# SLOT 9 — MIDPOINT DISCOVERY
+# =========================================================
+
+  - slot_id: LINKED_LIST_SLOT_9_MIDPOINT
+    mental_install: "Ratio pointers (Fast/Slow) find the middle without a counter."
+    invariant: "Fast moves $2x$, Slow moves $x$; when Fast hits end, Slow is at middle."
+    mastery_signals:
+      - Correctly handles even vs odd length behavior
+      - Stops before null pointer exceptions
+    hard_failures:
+      - Off-by-one error on list end
+
+    templates:
+      - id: ll_s9_middle
+        type: coding
+        difficulty: easy
+        role: proof
+        invariant_targets: [two_pointers, optimization]
+        probe_cost: 1.0
+        prompt: "Return the middle node of the linked list."
+        language: python
+        starter_code: |
+          def middleNode(head):
+              pass
+        concepts: [two_pointers, optimization]
+
+      - id: ll_s9_remediation
+        base_id: ll_s9_middle
+        type: explanation
+        role: reinforcement
+        invariant_targets: [linked_lists]
+        probe_cost: 0.5
+        variant: remediation
+        strategy: explanation
+        prompt: |
+          Trace the $(2x, x)$ progression for list lengths 4 and 5. 
+          Identify the terminating condition for both even and odd lengths.
+
+      - id: ll_s9_mcq_midpoint
+        type: mcq
+        difficulty: easy
+        role: diagnostic
+        invariant_targets: [two_pointers, ratio_traversal]
+        probe_cost: 0.5
+        prompt: "Why does the fast-slow pointer technique work for finding the midpoint?"
+        options:
+          - "Because fast moves twice as fast as slow"
+          - "Because slow moves twice as fast as fast"
+          - "Because both move at the same speed but start at different times"
+          - "Because they move in opposite directions"
+        correct_answer: 0
+        concepts: [two_pointers, ratio_traversal]
+
+      - id: ll_s9_remediation_mcq
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        role: reinforcement
+        invariant_targets: [logic]
+        probe_cost: 0.5
+        prompt: |
+          If one person covers the whole distance while another covers exactly half,
+          the second person is at the midpoint! Fast covers 100% of the list, 
+          so slow covers 50%.
+        concepts: [logic]
+
+# =========================================================
+# SLOT 10 — LINKED STRUCTURES (DOUBLY)
+# =========================================================
+
+  - slot_id: LINKED_LIST_SLOT_10_DOUBLY
+    mental_install: "Bi-directional pointers trade memory for O(1) removals."
+    invariant: "node.next.prev == node."
+    mastery_signals:
+      - Explains the benefit of deleting a node given only its reference
+      - Identifies memory overhead (additional pointer)
+    hard_failures:
+      - Does not account for head/tail special cases in doubly linked logic
+
+    templates:
+      - id: ll_s10_doubly_model
+        type: explanation
+        difficulty: medium
+        role: diagnostic
+        invariant_targets: [bi_directionality, complexity]
+        probe_cost: 0.8
+        prompt: |
+          Why is a Doubly Linked List better for a 'Browser Back/Forward' button than a Singly Linked List?
+        rubric: "Must reference O(1) backward traversal vs O(n) re-traversal."
+        concepts: [bi_directionality, complexity]
+
+      - id: ll_s10_remediation
+        base_id: ll_s10_doubly_model
+        type: explanation
+        role: reinforcement
+        invariant_targets: [linked_lists]
+        probe_cost: 0.5
+        variant: remediation
+        strategy: explanation
+        prompt: |
+          Explain the memory-performance tradeoff of 'prev' pointers. 
+          Show how 'prev' lets us 'teleport' back one step without starting from the head.
+
+      - id: ll_s10_mcq_doubly
+        type: mcq
+        difficulty: easy
+        role: diagnostic
+        invariant_targets: [bi_directionality, complexity]
+        probe_cost: 0.5
+        prompt: "What is the primary advantage of a Doubly Linked List over a Singly Linked List?"
+        options:
+          - "Uses less memory"
+          - "Allows O(1) traversal to the previous node"
+          - "Allows random access by index"
+          - "Is easier to implement"
+        correct_answer: 1
+        concepts: [bi_directionality, complexity]
+
+      - id: ll_s10_remediation_mcq
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        role: reinforcement
+        invariant_targets: [traversal]
+        probe_cost: 0.5
+        prompt: |
+          By storing a `prev` pointer in addition to `next`, we can step backwards
+          instantly (O(1)). In a singly linked list, to find the predecessor, you 
+          must start from the head.
+        concepts: [traversal]
+
+# =========================================================
+# SLOT 11 — CONVERGENCE & COMPARISON
+# =========================================================
+
+  - slot_id: LINKED_LIST_SLOT_11_PALINDROME
+    mental_install: "Complexity tasks often require combining midpoint, reversal, and comparison."
+    invariant: "Structure is a palindrome if Reversed(SecondHalf) == FirstHalf."
+    mastery_signals:
+      - Chaining several mental models (Slow/Fast + Reverse + Compare)
+      - Restores the original list (optional but good practice)
+    hard_failures:
+      - Uses $O(n)$ space (converting to array) instead of $O(1)$ space
+
+    templates:
+      - id: ll_s11_palindrome
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [data_composition, pointers]
+        probe_cost: 1.2
+        prompt: "Check if a linked list is a palindrome in O(n) time and O(1) space."
+        language: python
+        starter_code: |
+          def isPalindrome(head):
+              pass
+        concepts: [data_composition, pointers]
+
+      - id: ll_s11_remediation
+        base_id: ll_s11_palindrome
+        type: explanation
+        role: reinforcement
+        invariant_targets: [linked_lists]
+        probe_cost: 0.5
+        variant: remediation
+        strategy: explanation
+        prompt: |
+          Break this down into three steps: Find Mid, Reverse Second Half, and Compare. 
+          Explain why this is better than copying into an array.
+
+      - id: ll_s11_mcq_complexity
+        type: mcq
+        difficulty: hard
+        role: diagnostic
+        invariant_targets: [optimal_space, constraints]
+        probe_cost: 0.5
+        prompt: "Why do we prefer O(1) extra space for linked list palindrome checking?"
+        options:
+          - "It makes the code faster"
+          - "It's a common interview constraint testing pointer manipulation mastery"
+          - "Linked lists are usually used in memory-constrained environments"
+          - "Both B and C"
+        correct_answer: 3
+        concepts: [optimal_space, constraints]
+
+      - id: ll_s11_remediation_mcq
+        type: explanation
+        variant: remediation
+        difficulty: medium
+        role: reinforcement
+        invariant_targets: [space_complexity]
+        probe_cost: 0.5
+        prompt: |
+          While copying to an array is easier, it defeats the purpose of using
+          a memory-efficient structure. True list mastery means manipulating the
+          existing nodes in-place.
+        concepts: [space_complexity]
+
+# =========================================================
+# SLOT 12 — HIERARCHICAL FLATTENING
+# =========================================================
+
+  - slot_id: LINKED_LIST_SLOT_12_FLATTENING
+    mental_install: "Flattening transforms nested or branching lists into one-dimensional sequences."
+    invariant: "Updating all neighbor pointers (next, prev, child) during extraction preserves the global physical order."
+    mastery_signals:
+      - Flattens multilevel doubly linked lists
+      - Correctly reconnects 'tail' of child branch to 'next' of parent
+    hard_failures:
+      - Loses references to trailing segments
+      - Creates infinite loops by not clearing 'child' pointers
+      - Improperly sets the 'prev' pointers in a doubly linked structure
+
+    templates:
+      - id: linked_list_s12_flatten
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [hierarchical_data, pointer_surgery]
+        probe_cost: 1.2
+        prompt: "Flatten a multilevel doubly linked list so that all nodes appear in a single-level doubly linked list."
+        language: python
+        starter_code: |
+          def flatten(head):
+              pass
+        concepts: [hierarchical_data, pointer_surgery]
+
+      - id: linked_list_s12_remediation
+        type: explanation
+        variant: remediation
+        difficulty: hard
+        role: reinforcement
+        invariant_targets: [structural_cleaning]
+        probe_cost: 0.5
+        prompt: |
+          Think of a 'child' list as an detour. 
+          1. Store the 'next' node.
+          2. Move into the 'child'.
+          3. When you reach the end of the child, stitch it back to the stored 'next' node.
+          Why is it important to set node.child = None after processing?
+        concepts: [structural_cleaning]
+
+      - id: linked_list_s12_mcq_pointers
+        type: mcq
+        difficulty: hard
+        role: diagnostic
+        invariant_targets: [doubly_linked_invariants]
+        probe_cost: 0.5
+        prompt: "In a multilevel doubly linked list, which pointers must be updated when 'inserting' a flattened child between two nodes A and B?"
+        options:
+          - "Only A.next and B.prev"
+          - "A.next, child_head.prev, child_tail.next, and B.prev"
+          - "Only the child_head and child_tail pointers"
+          - "No pointers need updating if we use recursion"
+        correct_answer: 1
+        concepts: [doubly_linked_invariants]
+
+      - id: linked_list_s12_remediation_mcq
+        type: explanation
+        variant: remediation
+        difficulty: medium
+        role: reinforcement
+        invariant_targets: [redundant_linking]
+        probe_cost: 0.5
+        prompt: |
+          Because it's a doubly linked list, every 'forward' connection needs 
+           a 'backward' connection. You have to bridge the gap from A to 
+           the child, AND the gap from the end of the child back to B.
+        concepts: [redundant_linking]

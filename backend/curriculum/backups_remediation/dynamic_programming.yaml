@@ -1,0 +1,381 @@
+skill: dynamic_programming
+version: v1
+description: >
+  Curriculum for Dynamic Programming.
+  Focuses on identifying overlapping subproblems, defining state recurrence,
+  and optimizing via Memoization (Top-Down) or Tabulation (Bottom-Up).
+
+slots:
+
+# =========================================================
+# SLOT 1 — MEMOIZATION (TOP-DOWN)
+# =========================================================
+
+  - slot_id: DP_SLOT_1_MEMOIZATION
+    mental_install: "Don't repeat yourself. Verify cache before computing."
+    invariant: "Function inputs uniquely define result."
+    mastery_signals:
+      - Adds dictionary/array cache to recursion
+    hard_failures:
+      - Ignores cache (recomputes)
+      - Caches wrong state (mutable args)
+
+    templates:
+      - id: dp_s1_explain
+        type: explanation
+        difficulty: easy
+        role: diagnostic
+        invariant_targets: [caching]
+        probe_cost: 0.8
+        prompt: "How does Memoization transform an O(2^N) Fibonacci solution into O(N)?"
+        concepts: [complexity, recursion_tree]
+
+      - id: dp_s1_remediation
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          Imagine doing a math problem. If you see '5 + 5' again, do you
+          re-calculate it, or do you remember the answer is 10? Memoization
+          is simply writing down the answers you've already found.
+        concepts: [caching]
+
+# =========================================================
+# SLOT 2 — BASIC RECURRENCE (FIBONACCI / CLIMBING STAIRS)
+# =========================================================
+
+  - slot_id: DP_SLOT_2_FIBONACCI_CLIMBING
+    mental_install: "Current step depends on previous steps."
+    invariant: "f(i) = f(i-1) + f(i-2)"
+    mastery_signals:
+      - Implements Climbing Stairs logic
+    hard_failures:
+      - Off-by-one errors
+
+    templates:
+      - id: dp_s2_climbing_stairs
+        type: coding
+        difficulty: easy
+        role: proof
+        invariant_targets: [recurrence]
+        probe_cost: 1.0
+        prompt: "You can climb 1 or 2 steps. How many ways to reach the top?"
+        language: python
+        starter_code: |
+          def climbStairs(n):
+              pass
+        concepts: [fibonacci, counting]
+
+# =========================================================
+# SLOT 3 — TABULATION (BOTTOM-UP)
+# =========================================================
+
+  - slot_id: DP_SLOT_3_TABULATION
+    mental_install: "Build the foundation first."
+    invariant: "No recursion overhead; iterative fill."
+    mastery_signals:
+      - Converts valid recursion to loop
+      - Optimizes space (O(1) space for Fib)
+    hard_failures:
+      - Uses recursion despite prompt asking for tabulation
+
+    templates:
+      - id: dp_s3_explain
+        type: explanation
+        difficulty: easy
+        role: diagnostic
+        invariant_targets: [iterative_dp]
+        probe_cost: 0.8
+        prompt: "Why might Tabulation be safer than Memoization for very deep recursion depths (e.g., N=100,000)?"
+        rubric: "Avoids Stack Overflow."
+        concepts: [stack_overflow, iteration]
+
+# =========================================================
+# SLOT 4 — 1D COST MINIMIZATION
+# =========================================================
+
+  - slot_id: DP_SLOT_4_1D_COST
+    mental_install: "Cumulative cost decision."
+    invariant: "min_cost(i) = cost[i] + min(prev_steps)."
+    mastery_signals:
+      - Correctly identifies the transition from recursive thinking to array-based state storage.
+    hard_failures:
+      - Ignores the base case (cost of step 0/1).
+    
+    templates:
+      - id: dp_s4_min_cost_stairs
+        type: coding
+        difficulty: medium
+        prompt: "Find the minimum cost to reach the top of the stairs, given cost[i] for each step."
+        language: python
+        concepts: [optimization, recurrence]
+
+  - slot_id: DP_SLOT_5_HOUSE_ROBBER
+    mental_install: "Decision: Include or Exclude? (Constraint: No adjacent selection)."
+    invariant: "dp[i] = max(rob[i] + dp[i-2], dp[i-1])"
+    mastery_signals:
+      - Correctly models the mutually exclusive choice
+      - Optimizes space to O(1) by only keeping last 2 states
+    hard_failures:
+      - Picks adjacent houses
+      - Fails small base cases (N=1, N=2)
+
+    templates:
+      - id: dp_s5_robber
+        type: coding
+        difficulty: medium
+        prompt: "Find the maximum amount you can rob without hitting adjacent houses."
+        concepts: [decision_modeling, space_optimization]
+
+  - slot_id: DP_SLOT_6_LIS
+    mental_install: "Longest Increasing Subsequence: Grow current solutions."
+    invariant: "LIS(i) = 1 + max(LIS(j)) for all j < i AND arr[j] < arr[i]."
+    mastery_signals:
+      - Nested loop approach O(N^2)
+      - Understands the 'optimal substructure'
+    hard_failures:
+      - Confuses subsequence with substring (contiguous)
+
+    templates:
+      - id: dp_s6_lis_impl
+        type: coding
+        difficulty: medium
+        prompt: "Find the length of the Longest Increasing Subsequence."
+        concepts: [optimal_substructure, lis]
+
+  - slot_id: DP_SLOT_9_LCS
+    mental_install: "Grid-based comparison (2 strings)."
+    invariant: "If match: 1 + diag; If no match: max(left, top)."
+    mastery_signals:
+      - Correctly fills 2D table
+      - Explains the O(M*N) complexity
+    hard_failures:
+      - Incorrect diagonal lookup
+
+    templates:
+      - id: dp_s9_lcs_impl
+        type: coding
+        difficulty: hard
+        prompt: "Find the Longest Common Subsequence between two strings."
+        concepts: [2d_dp, strings]
+
+  - slot_id: DP_SLOT_10_KNAPSACK_01
+    mental_install: "Weight vs Value tradeoff with limited capacity."
+    invariant: "dp[i][w] = max(val[i] + dp[i-1][w-wt[i]], dp[i-1][w])"
+    mastery_signals:
+      - Handles weight capacity boundary
+      - Space optimizes to 1D array (looping backwards)
+    hard_failures:
+      - Double counting items (looping forwards in 1D optimization)
+
+    templates:
+      - id: dp_s10_knapsack
+        type: coding
+        difficulty: hard
+        prompt: "Solve the 0/1 Knapsack problem."
+        concepts: [resource_allocation, knapsack]
+
+  - slot_id: DP_SLOT_12_EDIT_DISTANCE
+    mental_install: "Minimum operations (Insert, Delete, Replace) to transform."
+    invariant: "dp[i][j] = 1 + min(replace[i-1][j-1], delete[i-1][j], insert[i][j-1])"
+    mastery_signals:
+      - Correct base case initialization (empty strings)
+    hard_failures:
+      - Forgets the cost of 1 for operations
+    
+    templates:
+      - id: dp_s12_edit_dist
+        type: coding
+        difficulty: hard
+        prompt: "Find the minimum edit distance between two strings."
+        concepts: [string_alignment, levenshtein]
+      - Min Cost Climbing Stairs
+    hard_failures:
+      - Greedy choice (taking cheapest single step instead of cheapest path)
+
+    templates:
+      - id: dp_s4_min_cost
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [path_minimization]
+        probe_cost: 1.2
+        prompt: "Find minimum cost to reach the top of the floor."
+        concepts: [optimization]
+
+# =========================================================
+# SLOT 5 — HOUSE ROBBER (CONSTRAINT SELECTION)
+# =========================================================
+
+  - slot_id: DP_SLOT_5_HOUSE_ROBBER
+    mental_install: "Skip or Take."
+    invariant: "dp[i] = max(dp[i-1], dp[i-2] + nums[i])."
+    mastery_signals:
+      - Handles non-adjacent constraint
+    hard_failures:
+      - Adds current value to adjacent previous value
+
+    templates:
+      - id: dp_s5_house_robber
+        type: coding
+        difficulty: medium
+        role: stretch
+        invariant_targets: [choice_constraint]
+        probe_cost: 1.5
+        prompt: "Maximize money defined by array, cannot rob adjacent houses."
+        concepts: [maximization]
+
+# =========================================================
+# SLOT 6 — LONGEST INCREASING SUBSEQUENCE (LIS)
+# =========================================================
+
+  - slot_id: DP_SLOT_6_LIS
+    mental_install: "Subsequence ends at index i."
+    invariant: "Check all j < i where nums[j] < nums[i]."
+    mastery_signals:
+      - O(N^2) DP solution
+    hard_failures:
+      - Confuses subsequence (non-contiguous) with subarray
+
+    templates:
+      - id: dp_s6_lis
+        type: coding
+        difficulty: medium
+        role: stretch
+        invariant_targets: [subsequence]
+        probe_cost: 1.5
+        prompt: "Find the length of the longest increasing subsequence."
+        concepts: [lis]
+
+# =========================================================
+# SLOT 7 — 2D GRID PATHS
+# =========================================================
+
+  - slot_id: DP_SLOT_7_2D_GRID
+    mental_install: "Path arrives from Top or Left."
+    invariant: "dp[r][c] = dp[r-1][c] + dp[r][c-1]."
+    mastery_signals:
+      - Handles grid boundaries
+    hard_failures:
+      - DFS without memoization (TLE)
+
+    templates:
+      - id: dp_s7_min_path_sum
+        type: coding
+        difficulty: medium
+        role: stretch
+        invariant_targets: [grid_dp]
+        probe_cost: 1.5
+        prompt: "Find a path from top left to bottom right which minimizes the sum of all numbers along its path."
+        concepts: [grid]
+
+# =========================================================
+# SLOT 8 — UNIQUE PATHS
+# =========================================================
+
+  - slot_id: DP_SLOT_8_UNIQUE_PATHS
+    mental_install: "Combinatorial counting via grid."
+    invariant: "Sum of ways to reach neighbors."
+    mastery_signals:
+      - Correct initialization of edges
+    hard_failures:
+      - Off-by-one bounds
+
+    templates:
+      - id: dp_s8_unique_paths
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [counting_paths]
+        probe_cost: 1.2
+        prompt: "Count unique paths from top-left to bottom-right."
+        concepts: [grid, combinations]
+
+# =========================================================
+# SLOT 9 — LONGEST COMMON SUBSEQUENCE (LCS)
+# =========================================================
+
+  - slot_id: DP_SLOT_9_LCS
+    mental_install: "Two pointer text comparison."
+    invariant: "If match: diagl+1. If not: max(left, up)."
+    mastery_signals:
+      - Uses 2D DP table
+    hard_failures:
+      - Compares substrings only
+
+    templates:
+      - id: dp_s9_lcs
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [string_dp]
+        probe_cost: 2.0
+        prompt: "Find the length of the longest common subsequence between two texts."
+        concepts: [lcs, strings]
+
+# =========================================================
+# SLOT 10 — 0/1 KNAPSACK
+# =========================================================
+
+  - slot_id: DP_SLOT_10_KNAPSACK_01
+    mental_install: "Capacity constraint budget."
+    invariant: "Max(exclude, include + val) if weight fits."
+    mastery_signals:
+      - Handles weight capacity check
+      - Iterates backwards for 1D space opt (optional)
+    hard_failures:
+      - Greedy by value/weight ratio (fails here)
+
+    templates:
+      - id: dp_s10_partition
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [knapsack]
+        probe_cost: 2.0
+        prompt: "Determine if array can be partitioned into two subsets with equal sum."
+        concepts: [subset_sum]
+
+# =========================================================
+# SLOT 11 — UNBOUNDED KNAPSACK (COIN CHANGE)
+# =========================================================
+
+  - slot_id: DP_SLOT_11_UNBOUNDED_KNAPSACK
+    mental_install: "Reuse items infinitely."
+    invariant: "Iterate items, update all capacities reachable."
+    mastery_signals:
+      - Solves Coin Change
+    hard_failures:
+      - Tries recursion without memoization (TLE)
+
+    templates:
+      - id: dp_s11_coin_change
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [unbounded_knapsack]
+        probe_cost: 2.0
+        prompt: "Fewest number of coins to make up that amount."
+        concepts: [coin_change]
+
+# =========================================================
+# SLOT 12 — EDIT DISTANCE
+# =========================================================
+
+  - slot_id: DP_SLOT_12_EDIT_DISTANCE
+    mental_install: "Operation costs (Insert, Delete, Replace)."
+    invariant: "Min of three previous neighboring states + cost."
+    mastery_signals:
+      - Correctly weights replacement cost
+    hard_failures:
+      - Fails to initialize base cases (empty strings)
+
+    templates:
+      - id: dp_s12_edit_dist
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [levenshtein]
+        probe_cost: 2.0
+        prompt: "Find minimum detailed operations to convert word1 to word2."
+        concepts: [string_manipulation]

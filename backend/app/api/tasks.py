@@ -62,6 +62,7 @@ async def get_task_execution_details(
         "instance_id": target_instance.task_instance_id,
         "status": target_instance.status,
         "difficulty": target_instance.difficulty,
+        "slot_id": target_instance.slot_id,
         
         # Static Content
         "title": f"Task: {template.skill} ({template.difficulty})",
@@ -69,6 +70,8 @@ async def get_task_execution_details(
         "language": template.language,
         "starter_code": template.starter_code,
         "question_type": template.question_type,
+        "options": template.options,
+        "invariants_required": template.invariant_targets,
         
         # User State (future proofing)
         "current_code": template.starter_code, # In v2, this would come from saved drafts

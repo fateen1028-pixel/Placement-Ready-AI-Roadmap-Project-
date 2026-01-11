@@ -28,6 +28,9 @@ slots:
       - id: stack_s1_impl
         type: coding
         difficulty: easy
+        role: proof
+        invariant_targets: [lifo, abstraction, controlled_access]
+        probe_cost: 1.0
         prompt: "Implement a stack with push, pop, and peek."
         language: python
         starter_code: |
@@ -49,6 +52,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [lifo, abstraction]
+        probe_cost: 0.5
         prompt: |
           A stack is like a stack of plates. You can only take the top one 
           without breaking the pile.
@@ -60,6 +66,9 @@ slots:
       - id: stack_s1_mcq_lifo
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [LIFO, stack_behavior]
+        probe_cost: 0.5
         prompt: "Which element is removed first in a Stack?"
         options:
           - "The first element added"
@@ -73,6 +82,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [LIFO]
+        probe_cost: 0.5
         prompt: |
           Stacks follow LIFO (Last-In-First-Out). Think of a stack of trays;
           the last tray you put on top is the first one you take off.
@@ -98,6 +110,9 @@ slots:
       - id: stack_s2_reverse_string
         type: coding
         difficulty: easy
+        role: proof
+        invariant_targets: [reversal, deferred_state]
+        probe_cost: 1.0
         prompt: "Reverse a string using a stack (no slicing)."
         language: python
         starter_code: |
@@ -109,6 +124,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [reversal, state_tracking]
+        probe_cost: 0.5
         prompt: |
           A stack is a 'reversal machine'. If you put numbers 1, 2, 3 in, 
           they come out 3, 2, 1. 
@@ -120,6 +138,9 @@ slots:
       - id: stack_s2_mcq_reverse
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [reversal, stack_ordering]
+        probe_cost: 0.5
         prompt: "If you push 'H', 'E', 'L', 'L', 'O' onto a stack, what is the first letter popped?"
         options:
           - "'H'"
@@ -133,6 +154,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [lifo_exit]
+        probe_cost: 0.5
         prompt: |
           Since 'O' was the LAST letter added, it sits at the very top. 
           Popping always takes the top item first.
@@ -156,6 +180,9 @@ slots:
       - id: stack_s3_parentheses
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [state_tracking, matching, invariants]
+        probe_cost: 1.2
         prompt: "Determine if a string of brackets '()[]{}' is valid."
         language: python
         starter_code: |
@@ -167,6 +194,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [nesting, delimiter_matching]
+        probe_cost: 0.5
         prompt: |
           Think of brackets like conversations. You can't end a conversation 
           that never started, and you must finish the current conversation 
@@ -179,6 +209,9 @@ slots:
       - id: stack_s3_mcq_balance
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [nested_validation, lifo]
+        probe_cost: 0.5
         prompt: "In the string '([)]', why is it considered invalid?"
         options:
           - "It has an equal number of opening and closing brackets"
@@ -192,6 +225,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [order_invariant]
+        probe_cost: 0.5
         prompt: |
           Even though all brackets have partners, the order is wrong. 
           The '[' was the last one opened, so the very next closing bracket 
@@ -216,6 +252,9 @@ slots:
       - id: stack_s4_min_stack
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [composite_state, invariants]
+        probe_cost: 1.2
         prompt: "Design a stack that supports push, pop, top, and retrieving the minimum element in constant time."
         language: python
         starter_code: |
@@ -231,6 +270,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [history_tracking, state_history]
+        probe_cost: 0.5
         prompt: |
           If we just track one `min` variable, what happens when we pop the 
           current minimum? We lose the history!
@@ -242,6 +284,9 @@ slots:
       - id: stack_s4_mcq_min_stack
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [min_stack, state_tracking]
+        probe_cost: 0.5
         prompt: "In a MinStack, if you push [10, 5, 8], what is the top of the min_stack?"
         options:
           - "10"
@@ -255,6 +300,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [invariants]
+        probe_cost: 0.5
         prompt: |
           Even after pushing 8, the value 5 remains the minimum. The min_stack 
           tracks the 'best' value seen so far for every level of the main stack.
@@ -278,6 +326,9 @@ slots:
       - id: stack_s5_postfix
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [postfix, operator_precedence]
+        probe_cost: 1.2
         prompt: "Evaluate the value of an arithmetic expression in Reverse Polish Notation (Postfix)."
         language: python
         starter_code: |
@@ -289,6 +340,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [postfix_logic]
+        probe_cost: 0.5
         prompt: |
           In Postfix (`3 4 +`), the operator comes AFTER the numbers. 
 
@@ -299,6 +353,9 @@ slots:
       - id: stack_s5_mcq_postfix_eval
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [postfix_calculation]
+        probe_cost: 0.5
         prompt: "Evaluate the RPN expression: ['2', '1', '+', '3', '*']"
         options:
           - "5"
@@ -312,6 +369,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [operation_flow]
+        probe_cost: 0.5
         prompt: |
           (2 + 1) = 3. Then [3, 3, *] becomes (3 * 3) = 9. 
           The stack effectively converts 'inner' operations into results for 'outer' ones.
@@ -335,6 +395,9 @@ slots:
       - id: stack_s6_shunting_yard_basics
         type: coding
         difficulty: hard
+        role: stretch
+        invariant_targets: [precedence, reordering]
+        probe_cost: 1.2
         prompt: "Convert an infix expression (like 'a+b*c') to postfix ('abc*+')."
         language: python
         starter_code: |
@@ -347,6 +410,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: hard
+        role: reinforcement
+        invariant_targets: [precedence_buffering]
+        probe_cost: 0.5
         prompt: |
           Why do we need a stack to convert Infix to Postfix? 
 
@@ -358,6 +424,9 @@ slots:
       - id: stack_s6_mcq_precedence
         type: mcq
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [shunting_yard, operator_precedence]
+        probe_cost: 0.5
         prompt: "During Infix-to-Postfix conversion, if you encounter a '+' and the stack top is '*', what do you do?"
         options:
           - "Push '+' on top of '*'"
@@ -371,6 +440,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [stack_rules]
+        probe_cost: 0.5
         prompt: |
           Since '*' has higher precedence than '+', it must be 'discharged' to 
           the output first. You cannot place a weaker operator on top of a 
@@ -395,6 +467,9 @@ slots:
       - id: stack_s7_queue_using_stacks
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [amortization, simulation, lifo_vs_fifo]
+        probe_cost: 1.2
         prompt: "Implement a FIFO queue using two stacks."
         language: python
         starter_code: |
@@ -412,6 +487,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [order_reversal]
+        probe_cost: 0.5
         prompt: |
           To turn a stack (LIFO) into a queue (FIFO), you need to flip the 
           order. 
@@ -424,6 +502,9 @@ slots:
       - id: stack_s7_mcq_queue_stacks
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [efficiency, amortization]
+        probe_cost: 0.5
         prompt: "In a Queue-from-Stacks implementation, when is the best time to move elements from the 'Push' stack to the 'Pop' stack?"
         options:
           - "Every time a push occurs"
@@ -437,6 +518,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [amortized_analysis]
+        probe_cost: 0.5
         prompt: |
           Moving elements takes O(N) time. By only doing it when the out-stack 
           is empty, we ensure that each element is moved exactly once, 
@@ -461,6 +545,9 @@ slots:
       - id: stack_s8_factorial_sim
         type: coding
         difficulty: hard
+        role: stretch
+        invariant_targets: [call_stack, simulation]
+        probe_cost: 1.2
         prompt: "Implement factorial using an explicit stack, not recursion."
         language: python
         starter_code: |
@@ -473,6 +560,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: hard
+        role: reinforcement
+        invariant_targets: [stack_frames]
+        probe_cost: 0.5
         prompt: |
           Recursion is just the computer taking 'notes' on what to do next.
 
@@ -483,6 +573,9 @@ slots:
       - id: stack_s8_mcq_overflow
         type: mcq
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [stack_overflow, memory_limits]
+        probe_cost: 0.5
         prompt: "What causes a 'Stack Overflow' error in a recursive function?"
         options:
           - "Too many items in a list"
@@ -496,6 +589,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [system_limits]
+        probe_cost: 0.5
         prompt: |
           The 'Stack' in memory has a fixed size. If you keep calling functions 
           (pushing frames) without ever returning (popping frames), you 
@@ -520,6 +616,9 @@ slots:
       - id: stack_s9_iterative_preorder
         type: coding
         difficulty: hard
+        role: stretch
+        invariant_targets: [dfs, tree_traversal, flow_control]
+        probe_cost: 1.2
         prompt: "Implement Pre-order traversal of a binary tree iteratively using a stack."
         language: python
         starter_code: |
@@ -532,6 +631,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: hard
+        role: reinforcement
+        invariant_targets: [visitation_order]
+        probe_cost: 0.5
         prompt: |
           When converting recursion to a stack for trees, you have to think 
           about which child you want to visit FIRST.
@@ -544,6 +646,9 @@ slots:
       - id: stack_s9_mcq_traversal_order
         type: mcq
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [dfs, lifo_logic]
+        probe_cost: 0.5
         prompt: "To achieve a Left-to-Right Pre-order traversal using a stack, in what order should you push a node's children?"
         options:
           - "Left child first, then Right child"
@@ -557,6 +662,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [ordering]
+        probe_cost: 0.5
         prompt: |
           Because stacks are LIFO, the LAST item you push is the FIRST one 
           processed. If you want to visit the Left child first, you must 
@@ -581,6 +689,9 @@ slots:
       - id: stack_s10_next_greater
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [monotonic_stack, optimization]
+        probe_cost: 1.2
         prompt: "For each element in an array, find the next greater element to its right."
         language: python
         starter_code: |
@@ -592,6 +703,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [pruning, visual_logic]
+        probe_cost: 0.5
         prompt: |
           Imagine a line of people looking to the right. A tall person blocks 
           the view of everyone shorter behind them.
@@ -605,6 +719,9 @@ slots:
       - id: stack_s10_mcq_monotonic_goal
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [complexity, linear_time]
+        probe_cost: 0.5
         prompt: "Why is a monotonic stack efficient for 'Next Greater Element'?"
         options:
           - "It sorts the entire array first"
@@ -618,6 +735,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [amortized_analysis]
+        probe_cost: 0.5
         prompt: |
           Even though there is a loop inside a loop (while inside for), no 
           element ever goes back into the stack once it's popped. Every 
@@ -642,6 +762,9 @@ slots:
       - id: stack_s11_histogram
         type: coding
         difficulty: hard
+        role: stretch
+        invariant_targets: [monotonic_stack, geometry, boundary_control]
+        probe_cost: 1.2
         prompt: "Find the area of the largest rectangle in a histogram."
         language: python
         starter_code: |
@@ -653,6 +776,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: hard
+        role: reinforcement
+        invariant_targets: [boundary_logic]
+        probe_cost: 0.5
         prompt: |
           A rectangle's height is limited by the shortest bar in its range. 
 
@@ -664,6 +790,9 @@ slots:
       - id: stack_s11_mcq_histogram_width
         type: mcq
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [boundary_identification]
+        probe_cost: 0.5
         prompt: "In the histogram problem, if we pop bar 'i', what defines its left boundary?"
         options:
           - "Index 0"
@@ -677,6 +806,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [geometric_invariants]
+        probe_cost: 0.5
         prompt: |
           The stack only contains bars that are 'smaller' than the ones above 
           them. So, the bar underneath 'i' in the stack is the first bar to 
@@ -701,6 +833,9 @@ slots:
       - id: stack_s12_three_in_one
         type: coding
         difficulty: hard
+        role: stretch
+        invariant_targets: [memory_management, pointer_logic]
+        probe_cost: 1.2
         prompt: "Implement three stacks using a single array of size N."
         language: python
         starter_code: |
@@ -715,6 +850,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: hard
+        role: reinforcement
+        invariant_targets: [space_optimization]
+        probe_cost: 0.5
         prompt: |
           Storing multiple stacks in one array is about space efficiency. 
 
@@ -728,6 +866,9 @@ slots:
       - id: stack_s12_mcq_division
         type: mcq
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [memory_allocation, tradeoffs]
+        probe_cost: 0.5
         prompt: "What is the main disadvantage of 'Fixed Division' (splitting an array into N equal parts) for multiple stacks?"
         options:
           - "It is too slow"
@@ -741,6 +882,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [flexibility]
+        probe_cost: 0.5
         prompt: |
           Fixed division is rigid. If Stack A is huge and Stack B is tiny, 
           Stack A will error out even if the total array is mostly empty. 

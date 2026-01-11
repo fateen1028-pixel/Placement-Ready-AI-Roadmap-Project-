@@ -1,6 +1,6 @@
 # app/schemas/task_template.py
 from pydantic import BaseModel, Field, model_validator
-from typing import Literal, Optional, List, Dict
+from typing import Literal, Optional, List, Dict, Any
 
 
 class TaskTemplate(BaseModel):
@@ -15,11 +15,16 @@ class TaskTemplate(BaseModel):
     strategy: Optional[Literal["explanation", "guided_practice", "retry_same", "easier_task"]] = None
     concepts: List[str] = Field(default_factory=list)
 
+    # V3: Skill-Driven Intelligence
+    invariant_targets: List[str] = Field(default_factory=list)
+    role: Literal["diagnostic", "reinforcement", "stretch", "proof"] = "diagnostic"
+    probe_cost: float = 1.0 # Cognitive load / time estimate
+
     prompt: str
 
     # MCQ-only
     options: Optional[List[str]] = None
-    correct_option: Optional[str] = None
+    correct_option: Optional[Any] = Field(None, alias="correct_answer")
 
     # Coding-only
     language: Optional[str] = None

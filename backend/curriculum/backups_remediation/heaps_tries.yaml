@@ -1,0 +1,389 @@
+skill: heaps_tries
+version: v1
+description: >
+  Curriculum for Priority Queues (Heaps) and Prefix Trees (Tries).
+  Focuses on implicit tree structures, efficiency of min/max retrieval,
+  and prefix-based search optimization.
+
+slots:
+
+# =========================================================
+# SLOT 1 — HEAP PROPERTY & STRUCTURE
+# =========================================================
+
+  - slot_id: HEAP_SLOT_1_PROPERTY
+    mental_install: "A heap is a complete binary tree where parent priority >= child priority."
+    invariant: "Root acts as the extreme value observer."
+    mastery_signals:
+      - Explains Min-Heap vs Max-Heap
+      - Identifies valid vs invalid heaps
+    hard_failures:
+      - Confuses Heap with BST (Binary Search Tree)
+      - Thinks generic tree structure is sufficient
+
+    templates:
+      - id: heap_s1_property_check
+        type: explanation
+        difficulty: easy
+        role: diagnostic
+        invariant_targets: [heap_invariant]
+        probe_cost: 0.8
+        prompt: |
+          Explain the key structural and ordering difference between a Minimum Binary Heap
+          and a Binary Search Tree (BST).
+        rubric: >
+            Must mention that Heap sorts vertical (parent vs child) and BST sorts 
+            horizontal (left vs right).
+        concepts: [heap_property, bst_comparison]
+
+      - id: heap_s1_remediation
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          In a Min-Heap, the boss (parent) must always be smaller than the employees (children).
+          There is no rule about who sits on the left or right, only who sits *above*.
+        concepts: [heap_property]
+
+# =========================================================
+# SLOT 2 — INSERTION (BUBBLE UP)
+# =========================================================
+
+  - slot_id: HEAP_SLOT_2_INSERTION
+    mental_install: "Insert at end to keep shape, bubble up to keep order."
+    invariant: "Structure first, Order second."
+    mastery_signals:
+      - Implements bubble-up (sift-up)
+      - Maintains complete tree property
+    hard_failures:
+      - Inserts at root
+      - Swaps incorrectly
+
+    templates:
+      - id: heap_s2_insert_code
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [heap_insert]
+        probe_cost: 1.0
+        prompt: "Implement the insert function for a Min-Heap."
+        language: python
+        starter_code: |
+          class MinHeap:
+              def __init__(self):
+                  self.heap = []
+              
+              def insert(self, val):
+                  # Write valid insertion logic
+                  pass
+        concepts: [heap_insert, complete_tree]
+
+      - id: heap_remediation_insertion
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          Imagine a corporate hierarchy where the boss sits at the top and each employee reports to someone above them. 
+          When a new employee joins, they start at the bottom. 
+          To maintain order, if the new employee is more "qualified" (has a higher value) than their manager, they get promoted, swapping places until everyone is in the right spot. 
+          This is how insertion works in a heap: new elements "bubble up" to maintain the heap property.
+        concepts: [mental_model, heap, insertion, corporate_hierarchy]
+
+# =========================================================
+# SLOT 3 — EXTRACTION (BUBBLE DOWN)
+# =========================================================
+
+  - slot_id: HEAP_SLOT_3_EXTRACTION
+    mental_install: "Remove root, replace with last, bubble down."
+    invariant: "Root replacement induces local violation only."
+    mastery_signals:
+      - Implements extract-min
+      - Handles swap with smallest child correctly
+    hard_failures:
+      - Fails to fill the root hole
+      - Swaps with random child
+
+    templates:
+      - id: heap_s3_extract_code
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [heap_extract]
+        probe_cost: 1.0
+        prompt: "Implement extract_min for the Min-Heap."
+        language: python
+        starter_code: |
+          def extract_min(self):
+              pass
+        concepts: [heap_extract]
+      - id: heap_remediation_extraction
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          Think of a sports tournament where the champion (the highest-ranked player) is at the top. 
+          When the champion leaves, someone from the bottom steps up to fill the spot. 
+          To keep the rankings fair, this new person may need to "play matches" (swap places) with others until the correct order is restored. 
+          In a heap, extracting the top element works the same way: the last element moves up and "sinks down" to maintain the heap structure.
+        concepts: [mental_model, heap, extraction, sports_tournament]
+# =========================================================
+# SLOT 4 — ARRAY REPRESENTATION
+# =========================================================
+
+  - slot_id: HEAP_SLOT_4_ARRAY_REPRESENTATION
+    mental_install: "Implicit links via index arithmetic."
+    invariant: "Left = 2*i + 1, Right = 2*i + 2"
+    mastery_signals:
+      - Calculates parent/child indices correctly
+    hard_failures:
+      - Uses pointers for heap
+      - Off-by-one errors
+
+    templates:
+      - id: heap_s4_index_math
+        type: explanation
+        difficulty: easy
+        role: diagnostic
+        invariant_targets: [implicit_tree]
+        probe_cost: 0.5
+        prompt: "If a node is at index 4 (0-based) in a binary heap, what are the indices of its parent and children?"
+        rubric: "Parent: 1, Children: 9 and 10."
+        concepts: [array_tree, index_math]
+
+      - id: heap_remediation_array
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          Picture the corporate hierarchy again, but instead of drawing a tree, you list everyone in a single line (an array). 
+          Each boss and their employees are placed at specific positions so you can always find a manager or subordinate by simple math. 
+          This is how heaps use arrays: the parent and child relationships are mapped using index calculations, making it efficient to navigate the hierarchy.
+        concepts: [mental_model, heap, array_representation, corporate_hierarchy]
+
+# =========================================================
+# SLOT 5 — PRIORITY QUEUE USAGE
+# =========================================================
+
+  - slot_id: HEAP_SLOT_5_PRIORITY_QUEUE
+    mental_install: "Use standard libraries for efficiency."
+    invariant: "O(log N) for push/pop."
+    mastery_signals:
+      - Uses heapq (Python) or PriorityQueue
+    hard_failures:
+      - Re-implements heap from scratch needlessly
+      - Uses list sort (O(N log N)) for simple insert
+
+    templates:
+      - id: heap_s5_library_usage
+        type: coding
+        difficulty: medium
+        role: stretch
+        invariant_targets: [pq_api]
+        probe_cost: 0.8
+        prompt: "Given a list of numbers, use a priority queue to output them in sorted order."
+        language: python
+        starter_code: |
+          import heapq
+          def heap_sort_simulation(nums):
+              pass
+        concepts: [pq_api, sorting]
+
+      - id: heap_remediation_priority_queue
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          Imagine a help desk where requests are handled based on urgency, not arrival time. 
+          The most urgent request is always addressed first, just like the boss in a corporate hierarchy gets the most attention. 
+          A heap acts as a priority queue, always keeping the highest-priority item at the top, ready to be processed next.
+        concepts: [mental_model, heap, priority_queue, corporate_hierarchy]
+
+# =========================================================
+# SLOT 6 — KTH ELEMENT
+# =========================================================
+
+  - slot_id: HEAP_SLOT_6_KTH_ELEMENT
+    mental_install: "Heap size limits scope to K relevant items."
+    invariant: "Min-Heap of size K keeps K largest items seen."
+    mastery_signals:
+      - Solves Kth Largest/Smallest efficiently
+    hard_failures:
+      - Sorts entire array O(N log N)
+      - Maintains wrong heap size
+
+    templates:
+      - id: heap_s6_kth_largest
+        type: coding
+        difficulty: medium
+        role: stretch
+        invariant_targets: [k_selection]
+        probe_cost: 1.2
+        prompt: "Find the Kth largest element in a stream."
+        language: python
+        starter_code: |
+          class KthLargest:
+              def __init__(self, k, nums):
+                  pass
+              def add(self, val):
+                  pass
+        concepts: [k_selection, online_algo]
+
+      - id: heap_remediation_kth_element
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          In a sports tournament, if you want to find the 3rd best player, you could remove the champion and runner-up one by one, each time letting the next best step up. 
+          Similarly, a heap lets you efficiently find the k-th largest (or smallest) element by repeatedly extracting the top, just like ranking players in order.
+        concepts: [mental_model, heap, kth_element, sports_tournament]
+
+# =========================================================
+# SLOT 7 — TRIE STRUCTURE
+# =========================================================
+
+  - slot_id: TRIE_SLOT_1_STRUCTURE
+    mental_install: "Nodes represent characters; paths represent strings."
+    invariant: "Common prefixes share strict structure."
+    mastery_signals:
+      - Defines TrieNode with children dict/array
+      - Handes 'end of word' marker
+    hard_failures:
+      - Stores full strings in nodes
+      - Forgets termination flag
+
+    templates:
+      - id: trie_s1_explain
+        type: explanation
+        difficulty: easy
+        role: diagnostic
+        invariant_targets: [prefix_tree]
+        probe_cost: 0.8
+        prompt: "Why is a Trie faster than a Hash Table for finding words starting with a prefix?"
+        concepts: [trie_vs_hash, efficiency]
+
+# =========================================================
+# SLOT 8 — INSERTION
+# =========================================================
+
+  - slot_id: TRIE_SLOT_2_INSERTION
+    mental_install: "Traverse existing path, forge new path."
+    invariant: "Length of word = Depth of insertion."
+    mastery_signals:
+      - Iterates characters
+      - Creates new nodes only when needed
+    hard_failures:
+      - Overwrites existing branches
+
+    templates:
+      - id: trie_s2_insert
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [trie_insert]
+        probe_cost: 1.0
+        prompt: "Implement the insert method for a Trie."
+        language: python
+        starter_code: |
+          class TrieNode:
+              def __init__(self):
+                  self.children = {}
+                  self.is_end = False
+                  
+          class Trie:
+              def insert(self, word):
+                  pass
+        concepts: [trie_insert]
+
+# =========================================================
+# SLOT 9 — PREFIX SEARCH
+# =========================================================
+
+  - slot_id: TRIE_SLOT_3_PREFIX_SEARCH
+    mental_install: "Fail fast if path breaks."
+    invariant: "If node missing, prefix illegal."
+    mastery_signals:
+      - Distinguishes startsWith vs search
+    hard_failures:
+      - Returns true for partial prefix in full search
+
+    templates:
+      - id: trie_s3_startswith
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [prefix_match]
+        probe_cost: 1.0
+        prompt: "Implement startsWith(prefix) for the Trie."
+        concepts: [prefix_match]
+
+# =========================================================
+# SLOT 10 — WORD SEARCH
+# =========================================================
+
+  - slot_id: TRIE_SLOT_4_WORD_SEARCH
+    mental_install: "Exact match requires path + termination."
+    invariant: "Last node must have is_end = True."
+    mastery_signals:
+      - Checks boolean flag at end of path
+    hard_failures:
+      - Matches prefix acts as full word
+
+    templates:
+      - id: trie_s4_search
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [exact_match]
+        probe_cost: 1.0
+        prompt: "Implement search(word) for the Trie."
+        concepts: [exact_match]
+
+# =========================================================
+# SLOT 11 — WILDCARD SEARCH
+# =========================================================
+
+  - slot_id: TRIE_SLOT_5_WILDCARD
+    mental_install: "Dot means explore all children."
+    invariant: "Backtracking logic strictly localized."
+    mastery_signals:
+      - Recursive DFS on wildcard
+    hard_failures:
+      - Tries to iterate linearly through dictionary
+
+    templates:
+      - id: trie_s5_wildcard
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [trie_dfs]
+        probe_cost: 1.5
+        prompt: "Design a data structure that supports adding words and searching with '.' as a wildcard."
+        language: python
+        starter_code: |
+          class WordDictionary:
+              def search(self, word):
+                  pass
+        concepts: [trie_dfs, recursion]
+
+# =========================================================
+# SLOT 12 — AUTOCOMPLETE
+# =========================================================
+
+  - slot_id: TRIE_SLOT_6_AUTOCOMPLETE
+    mental_install: "Prefix node is root of all completions."
+    invariant: "Subtree traversal yields all valid suffixes."
+    mastery_signals:
+      - Collects all words from a given node
+    hard_failures:
+      - Returns unordered random results
+      - Re-searches from root
+
+    templates:
+      - id: trie_s6_autocomplete
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [trie_traversal]
+        probe_cost: 1.5
+        prompt: "Implement an autocomplete system that returns all words starting with a given prefix."
+        concepts: [trie_traversal, collection]

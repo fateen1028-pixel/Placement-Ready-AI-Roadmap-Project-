@@ -1,12 +1,13 @@
 from app.schemas.ai_evaluation import AIEvaluationResult
+from typing import Any
 
 def evaluate_mcq(
     *,
-    selected_option: str,
-    correct_option: str,
+    selected_option: Any,
+    correct_option: Any,
     skill: str
 ) -> AIEvaluationResult:
-    correct = selected_option == correct_option
+    correct = str(selected_option) == str(correct_option)
 
     return AIEvaluationResult(
         passed=correct,

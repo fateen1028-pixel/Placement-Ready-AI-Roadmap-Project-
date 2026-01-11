@@ -2,16 +2,20 @@ from app.domain.task_template_loader import get_all_templates
 from app.schemas.roadmap_state import TaskSlot
 from app.core.exceptions import TemplateResolutionError
 from app.services.curriculum_service import CurriculumService
+from app.domain.adaptive_control import DecisionContext
+from app.domain.orchestrator import AdaptiveOrchestrator
+from typing import Optional
 
 
 def resolve_task_template_id(
     *,
     slot: TaskSlot,
+    context: Optional[DecisionContext] = None,
     track_id: str = "dsa",
 ) -> str:
     """
     Single source of truth for task template selection.
-    Respects the remediation pipeline (explanation -> guided_practice -> retry).
+    Uses AdaptiveOrchestrator if context is provided, else falls back to deterministic logic.
     """
     # 1. Find all templates tied to this slot
     all_templates = get_all_templates()
@@ -61,7 +65,13 @@ def resolve_task_template_id(
             
         return matches[0].task_template_id
 
-    # Normal path (standard task)
+    # 3. Decision Control Layer (V3 Adaptive Logic)
+    if context:
+        orchestrator = AdaptiveOrchestrator(context)
+        template = orchestrator.plan_next_action(slot, candidates)
+        return template.task_template_id
+
+    # Normal path (standard task fallback)
     matches = [
         t for t in candidates
         if t.variant in (None, "standard")

@@ -24,6 +24,9 @@ slots:
       - id: queue_s1_impl
         type: coding
         difficulty: easy
+        role: proof
+        invariant_targets: [fifo, circular_buffer]
+        probe_cost: 1.0
         prompt: "Implement a queue using a circular array."
         language: python
         starter_code: |
@@ -39,6 +42,9 @@ slots:
       - id: queue_s1_remediation
         base_id: queue_s1_impl
         type: explanation
+        role: reinforcement
+        invariant_targets: [queues]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -49,6 +55,9 @@ slots:
       - id: queue_s1_mcq_fifo
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [FIFO, queue_behavior]
+        probe_cost: 0.5
         prompt: "If you enqueue [A, B, C] in that order, which element will be dequeued first?"
         options:
           - "C"
@@ -62,6 +71,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [FIFO]
+        probe_cost: 0.5
         prompt: |
           Queues follow FIFO (First-In-First-Out). The first element to enter
           the queue is always the first one to leave.
@@ -85,6 +97,9 @@ slots:
       - id: queue_s2_sliding_window
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [deque, window_model]
+        probe_cost: 1.2
         prompt: "Find maximum in each sliding window."
         language: python
         starter_code: |
@@ -95,6 +110,9 @@ slots:
       - id: queue_s2_remediation
         base_id: queue_s2_sliding_window
         type: explanation
+        role: reinforcement
+        invariant_targets: [queues]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -105,6 +123,9 @@ slots:
       - id: queue_s2_mcq_sliding_window
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [deque, sliding_window_optimization]
+        probe_cost: 0.5
         prompt: "In a sliding window problem, why is a Deque (Double-Ended Queue) often used?"
         options:
           - "To store all elements of the array"
@@ -118,6 +139,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [deque_efficiency]
+        probe_cost: 0.5
         prompt: |
           A deque allows us to remove stale elements from the front AND 
           useless elements from the back in constant time, keeping the 
@@ -141,6 +165,9 @@ slots:
       - id: queue_s3_bfs_explain
         type: explanation
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [bfs, shortest_path]
+        probe_cost: 0.8
         prompt: |
           Why do we use a queue instead of a stack for Breadth-First Search? 
           How does the FIFO property guarantee we find the shortest path in an unweighted graph?
@@ -150,6 +177,9 @@ slots:
       - id: queue_s3_remediation
         base_id: queue_s3_bfs_explain
         type: explanation
+        role: reinforcement
+        invariant_targets: [queues]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -159,6 +189,9 @@ slots:
       - id: queue_s3_mcq_bfs
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [BFS, shortest_path, FIFO]
+        probe_cost: 0.5
         prompt: "Which property of a Queue ensures BFS finds the shortest path in an unweighted graph?"
         options:
           - "LIFO"
@@ -172,6 +205,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [level_level_search]
+        probe_cost: 0.5
         prompt: |
           Because we process nodes in the order they were 'seen', we finish 
           all nodes at distance 1 before moving to distance 2, ensuring we 
@@ -195,6 +231,9 @@ slots:
       - id: queue_s4_two_stacks
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [conversions, amortized_analysis]
+        probe_cost: 1.2
         prompt: "Implement a Queue using two Stacks."
         language: python
         starter_code: |
@@ -209,6 +248,9 @@ slots:
       - id: queue_s4_remediation
         base_id: queue_s4_two_stacks
         type: explanation
+        role: reinforcement
+        invariant_targets: [queues]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -219,6 +261,9 @@ slots:
       - id: queue_s4_mcq_two_stacks
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [stack_conversion, amortized_efficiency]
+        probe_cost: 0.5
         prompt: "When implementing a Queue with two Stacks (In-Stack and Out-Stack), when do you transfer elements from In to Out?"
         options:
           - "On every enqueue"
@@ -232,6 +277,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [amortization]
+        probe_cost: 0.5
         prompt: |
           To maintain O(1) amortized time, we only flip the 'pancake stack' 
           when we absolutely have to—which is when our 'ready-to-serve' 
@@ -255,6 +303,9 @@ slots:
       - id: queue_s5_round_robin
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [simulation, fairness]
+        probe_cost: 1.2
         prompt: "Check how many seconds it takes for all people in a queue to buy tickets (1 per second)."
         language: python
         starter_code: |
@@ -265,6 +316,9 @@ slots:
       - id: queue_s5_remediation
         base_id: queue_s5_round_robin
         type: explanation
+        role: reinforcement
+        invariant_targets: [queues]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -274,6 +328,9 @@ slots:
       - id: queue_s5_mcq_scheduling
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [scheduling, fairness, FIFO]
+        probe_cost: 0.5
         prompt: "In a Round-Robin scheduler, what happens to a task that isn't finished after its time slice?"
         options:
           - "It is deleted"
@@ -287,6 +344,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [preemption]
+        probe_cost: 0.5
         prompt: |
           Fairness means everyone gets a turn. If you aren't done, you go to 
           the back of the line so the next person can have their turn.
@@ -309,6 +369,9 @@ slots:
       - id: queue_s6_binary_tree_level
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [trees, serialization]
+        probe_cost: 1.2
         prompt: "Perform level order traversal of a binary tree (flat output or grouping)."
         language: python
         starter_code: |
@@ -319,6 +382,9 @@ slots:
       - id: queue_s6_remediation
         base_id: queue_s6_binary_tree_level
         type: explanation
+        role: reinforcement
+        invariant_targets: [queues]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -328,6 +394,9 @@ slots:
       - id: queue_s6_mcq_level_order
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [level_traversal, snapshot_logic]
+        probe_cost: 0.5
         prompt: "During a level-order traversal, why do we use 'len(queue)' at the start of each level loop?"
         options:
           - "To know when the tree ends"
@@ -341,6 +410,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [level_separation]
+        probe_cost: 0.5
         prompt: |
           Without a 'size snapshot', the loop would continue processing nodes as 
           soon as it adds them (the children), mixing level 1 and level 2 together.
@@ -363,6 +435,9 @@ slots:
       - id: queue_s7_priority_model
         type: explanation
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [heuristics, ordering]
+        probe_cost: 0.8
         prompt: |
           In an Emergency Room, would you use a standard FIFO Queue or a Priority Queue for triage? Why?
         rubric: "Must reference severity-based sorting over arrival-order sorting."
@@ -371,6 +446,9 @@ slots:
       - id: queue_s7_remediation
         base_id: queue_s7_priority_model
         type: explanation
+        role: reinforcement
+        invariant_targets: [queues]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -380,6 +458,9 @@ slots:
       - id: queue_s7_mcq_priority
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [priority_queue, ordering]
+        probe_cost: 0.5
         prompt: "What is the key difference between a Priority Queue and a standard Queue?"
         options:
           - "Priority Queue is always faster"
@@ -393,6 +474,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [heuristics]
+        probe_cost: 0.5
         prompt: |
           A standard queue is 'first-come, first-served'. A priority queue 
           is 'most-important, first-served'.
@@ -415,6 +499,9 @@ slots:
       - id: queue_s8_circular_math
         type: explanation
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [modulo_arithmetic, memory_reuse]
+        probe_cost: 0.8
         prompt: |
           Why do we use the modulo operator (%) in a circular queue implementation? 
           What happens to the head pointer when it reaches the last index of the array?
@@ -424,6 +511,9 @@ slots:
       - id: queue_s8_remediation
         base_id: queue_s8_circular_math
         type: explanation
+        role: reinforcement
+        invariant_targets: [queues]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -433,6 +523,9 @@ slots:
       - id: queue_s8_mcq_modulo
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [modulo_arithmetic, circular_buffers]
+        probe_cost: 0.5
         prompt: "In a circular queue of size 5, if the tail is at index 4, where will the next element be enqueued?"
         options:
           - "Index 5"
@@ -446,6 +539,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [wrap_around]
+        probe_cost: 0.5
         prompt: |
           `(4 + 1) % 5 = 0`. The modulo operator 'wraps' the index back to the 
           start of the array, letting us reuse the space we previously 
@@ -469,6 +565,9 @@ slots:
       - id: queue_s9_stream_avg
         type: coding
         difficulty: easy
+        role: proof
+        invariant_targets: [streaming, stats]
+        probe_cost: 1.0
         prompt: "Implement a MovingAverage class that calculates the average of the last N numbers."
         language: python
         starter_code: |
@@ -480,6 +579,9 @@ slots:
       - id: queue_s9_remediation
         base_id: queue_s9_stream_avg
         type: explanation
+        role: reinforcement
+        invariant_targets: [queues]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -490,6 +592,9 @@ slots:
       - id: queue_s9_mcq_sliding_avg
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [streaming_data, arrival_order]
+        probe_cost: 0.5
         prompt: "Why is a Queue appropriate for calculating a moving average?"
         options:
           - "It sorts the data automatically"
@@ -503,6 +608,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [history_management]
+        probe_cost: 0.5
         prompt: |
           Moving averages only care about the last N items. The FIFO property 
           of a queue makes it trivial to identify and remove the 'stale' 
@@ -526,6 +634,9 @@ slots:
       - id: queue_s10_hit_counter
         type: coding
         difficulty: hard
+        role: stretch
+        invariant_targets: [expiry, timestamps]
+        probe_cost: 1.2
         prompt: "Design a HitCounter that counts requests in the last 5 minutes (300 seconds)."
         language: python
         starter_code: |
@@ -538,6 +649,9 @@ slots:
       - id: queue_s10_remediation
         base_id: queue_s10_hit_counter
         type: explanation
+        role: reinforcement
+        invariant_targets: [queues]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -547,6 +661,9 @@ slots:
       - id: queue_s10_mcq_expiry
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [time_windows, expiry_logic]
+        probe_cost: 0.5
         prompt: "When implementating a hit counter for the last 5 minutes, what is the 'head' of your timestamp queue?"
         options:
           - "The most recent hit"
@@ -560,6 +677,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [timestamp_management]
+        probe_cost: 0.5
         prompt: |
           In a FIFO queue, hits are added to the tail. Therefore, the hits 
           waiting at the head are the oldest. To count hits in a window, we 
@@ -584,6 +704,9 @@ slots:
       - id: queue_s11_design_deque
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [deque, circular_buffer, memory_layout]
+        probe_cost: 1.2
         prompt: "Design your implementation of the circular double-ended queue (deque)."
         language: python
         starter_code: |
@@ -599,6 +722,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [modular_arithmetic]
+        probe_cost: 0.5
         prompt: |
           Think of a Deque as a tube that's open at both ends. 
           1. How do you move 'front' back by one in a circular way? (Hint: (front - 1 + capacity) % capacity).
@@ -608,6 +734,9 @@ slots:
       - id: queue_s11_mcq_complexity
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [deque_properties]
+        probe_cost: 0.5
         prompt: "What is the primary advantage of a Deque over a standard Queue?"
         options:
           - "It uses less memory"
@@ -621,6 +750,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [flexibility]
+        probe_cost: 0.5
         prompt: |
           A standard queue is strictly 1-way (in at the back, out at the front).
           A deque gives you the flexibility to use it like a stack OR a queue,
@@ -645,6 +777,9 @@ slots:
       - id: queue_s12_sliding_max
         type: coding
         difficulty: hard
+        role: stretch
+        invariant_targets: [monotonic_queue, sliding_window, optimization]
+        probe_cost: 1.2
         prompt: "Find the maximum for each sliding window of size k in an array."
         language: python
         starter_code: |
@@ -656,6 +791,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: hard
+        role: reinforcement
+        invariant_targets: [pruning_logic]
+        probe_cost: 0.5
         prompt: |
           Imagine a professional sports team. New talent (new elements) can 
           replace older, weaker players immediately.
@@ -667,6 +805,9 @@ slots:
       - id: queue_s12_mcq_efficiency
         type: mcq
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [amortized_analysis]
+        probe_cost: 0.5
         prompt: "Why is the monotonic queue O(n) for the sliding window problem?"
         options:
           - "Every element is pushed and popped at most once across the whole run"
@@ -680,6 +821,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [optimization]
+        probe_cost: 0.5
         prompt: |
           Even though we check the queue multiple times inside the loop, 
           each number from the original array is added once and removed once.

@@ -80,9 +80,7 @@ export default function ExplanationTaskPage({ params, searchParams }) {
       setEvaluation(evalData);
 
       if (evalData?.passed) {
-        setTimeout(() => {
-          router.push("/dashboard/roadmap");
-        }, 3000);
+        router.push("/dashboard");
       }
     } catch (error) {
       console.error("Failed to submit explanation:", error);

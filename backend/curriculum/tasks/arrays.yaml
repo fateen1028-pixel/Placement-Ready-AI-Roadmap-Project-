@@ -25,6 +25,9 @@ slots:
       - id: arrays_s1_address_math
         type: explanation
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [memory_model]
+        probe_cost: 0.8
         prompt: |
           An integer array starts at memory address 2000.
           Each integer occupies 4 bytes.
@@ -37,6 +40,9 @@ slots:
       - id: arrays_s1_index_access
         type: coding
         difficulty: easy
+        role: proof
+        invariant_targets: [indexing]
+        probe_cost: 1.0
         prompt: "Return the element at index k. Assume valid input."
         language: python
         starter_code: |
@@ -48,6 +54,9 @@ slots:
         base_id: arrays_s1_address_math
         type: explanation
         variant: remediation
+        role: reinforcement
+        invariant_targets: [memory_model]
+        probe_cost: 0.5
         strategy: explanation
         prompt: |
           Rebuild the memory model of arrays.

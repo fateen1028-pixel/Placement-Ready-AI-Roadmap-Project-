@@ -1,0 +1,181 @@
+skill: complexity
+version: v2
+description: 'Foundational curriculum for Big O analysis and computational cost modeling.
+  Focuses on growth rates, worst-case analysis, and space-time tradeoffs.
+
+  '
+slots:
+- slot_id: CORE_SLOT_1_COMPLEXITY_GROWTH
+  mental_install: Big O describes how resource requirements grow as input size N increases.
+  invariant: Function growth rate > constant factors at scale.
+  mastery_signals:
+  - Ranks O(1), O(log N), O(N), O(N log N), O(N^2) correctly
+  hard_failures:
+  - Thinks O(2N) is different from O(N)
+  - Confuses N with constant value
+  templates:
+  - id: complexity_s1_rank_growth
+    type: mcq
+    difficulty: easy
+    prompt: Which of the following time complexities grows the SLOWEST as N becomes
+      very large?
+    options:
+    - O(N)
+    - O(log N)
+    - O(N^2)
+    - O(1)
+    correct_answer: 3
+    concepts:
+    - growth_rates
+    - big_o
+  - id: complexity_s1_remediation_scaling
+    type: explanation
+    variant: remediation
+    difficulty: easy
+    prompt: 'Think of Big O as "How much more work do I do if I double the input?"
+
+      If doubling the input (N to 2N) doubles the time, it''s O(N).
+
+      If doubling the input only adds one small step, it''s O(log N).
+
+      '
+    concepts:
+    - mental_model
+    - scaling
+- slot_id: CORE_SLOT_2_COMPLEXITY_LOGARITHMS
+  mental_install: Logarithms emerge from repeated division.
+  invariant: N steps -> Log N steps by halving.
+  mastery_signals:
+  - Associates halving with Log N
+  hard_failures:
+  - Thinks straight line search is Log N
+  templates:
+  - id: complexity_s1_log_origin
+    type: explanation
+    difficulty: medium
+    prompt: "In algorithms like Binary Search, we say the complexity is O(log N).\
+      \ \nExplain what physical action in an algorithm typically leads to a logarithmic\
+      \ growth rate.\n"
+    rubric: Must mention repeatedly dividing the search space or input size by a constant
+      factor (usually half).
+    concepts:
+    - logarithms
+    - divide_and_conquer
+  - id: CORE_SLOT_2_COMPLEXITY_LOGARITHMS_remediation
+    type: explanation
+    variant: remediation
+    difficulty: easy
+    prompt: Explain the core idea of this slot in a simple mental-model and why it
+      matters. Use a real-world analogy.
+    concepts:
+    - mental_model
+- slot_id: CORE_SLOT_3_COMPLEXITY_LOOPS
+  mental_install: Linear loops dominate constant operations.
+  invariant: Loops define the multiplier of operations.
+  mastery_signals:
+  - Identifies dominant terms in expressions
+  hard_failures:
+  - Counts inner operations incorrectly
+  templates:
+  - id: complexity_s1_analyze_loops
+    type: explanation
+    difficulty: medium
+    prompt: "Analyze the following code:\n```python\nfor i in range(n):\n    for j\
+      \ in range(100):\n        print(i, j)\n```\nWhat is the Big O time complexity\
+      \ and why?\n"
+    rubric: 'Must identify O(n). Explain that 100 is a constant and the outer loop
+      is the dominant factor.
+
+      '
+    concepts:
+    - dominance
+    - constant_factors
+  - id: CORE_SLOT_3_COMPLEXITY_LOOPS_remediation
+    type: explanation
+    variant: remediation
+    difficulty: easy
+    prompt: Explain the core idea of this slot in a simple mental-model and why it
+      matters. Use a real-world analogy.
+    concepts:
+    - mental_model
+- slot_id: CORE_SLOT_4_COMPLEXITY_NESTED
+  mental_install: Nested dependence creates polynomial growth.
+  invariant: Summation of 1..N scales as N^2.
+  mastery_signals:
+  - Cannot identify nested loop complexity
+  hard_failures:
+  - Thinks N + N is N^2
+  templates:
+  - id: complexity_s1_nested_dependent
+    type: explanation
+    difficulty: hard
+    prompt: "Analyze this code:\n```python\nfor i in range(n):\n    for j in range(i):\n\
+      \        print(i, j)\n```\nThe inner loop runs 1+2+3...+N times. What is the\
+      \ Big O and why?\n"
+    rubric: Must identify O(N^2). Explains that (N*(N-1))/2 still simplifies to N^2.
+    concepts:
+    - summation
+    - quadratic_growth
+  - id: CORE_SLOT_4_COMPLEXITY_NESTED_remediation
+    type: explanation
+    variant: remediation
+    difficulty: easy
+    prompt: Explain the core idea of this slot in a simple mental-model and why it
+      matters. Use a real-world analogy.
+    concepts:
+    - mental_model
+- slot_id: CORE_SLOT_5_COMPLEXITY_SPACE
+  mental_install: Memory usage scales independently of time.
+  invariant: Allocation size relative to N determines space complexity.
+  mastery_signals:
+  - Separates auxiliary space from input space
+  hard_failures:
+  - Thinks time = space
+  templates:
+  - id: complexity_s1_space_vs_time
+    type: mcq
+    difficulty: medium
+    prompt: An algorithm creates a new array of size N inside a loop that runs N times.
+      What is the SPACE complexity?
+    options:
+    - O(1)
+    - O(N)
+    - O(N^2)
+    - O(log N)
+    correct_answer: 1
+    concepts:
+    - space_complexity
+    - memory_allocation
+  - id: CORE_SLOT_5_COMPLEXITY_SPACE_remediation
+    type: explanation
+    variant: remediation
+    difficulty: easy
+    prompt: Explain the core idea of this slot in a simple mental-model and why it
+      matters. Use a real-world analogy.
+    concepts:
+    - mental_model
+- slot_id: CORE_SLOT_6_COMPLEXITY_WORST_CASE
+  mental_install: Engineering relies on guarantees, not luck.
+  invariant: Worst case dictates system limits.
+  mastery_signals:
+  - Explains worst-case vs average-case
+  hard_failures:
+  - Optimizes for best case only
+  templates:
+  - id: complexity_s1_worst_case_logic
+    type: explanation
+    difficulty: easy
+    prompt: Why do engineers usually focus on Worst-Case (Big O) rather than Best-Case
+      (Big Omega)?
+    rubric: Must mention reliability, performance guarantees, and scalability safety.
+    concepts:
+    - worst_case
+    - engineering_tradeoffs
+  - id: CORE_SLOT_6_COMPLEXITY_WORST_CASE_remediation
+    type: explanation
+    variant: remediation
+    difficulty: easy
+    prompt: Explain the core idea of this slot in a simple mental-model and why it
+      matters. Use a real-world analogy.
+    concepts:
+    - mental_model

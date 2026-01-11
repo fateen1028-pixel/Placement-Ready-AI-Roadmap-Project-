@@ -27,6 +27,9 @@ slots:
       - id: strings_s1_memory_explain
         type: explanation
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [memory_model, immutability]
+        probe_cost: 0.8
         prompt: |
           Explain how strings are stored in memory and why many languages make them immutable.
         rubric: "Must mention contiguous layout and immutability consequence."
@@ -35,6 +38,9 @@ slots:
       - id: strings_s1_remediation
         base_id: strings_s1_memory_explain
         type: explanation
+        role: reinforcement
+        invariant_targets: [strings]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -44,6 +50,9 @@ slots:
       - id: strings_s1_access
         type: coding
         difficulty: easy
+        role: proof
+        invariant_targets: [indexing, strings]
+        probe_cost: 1.0
         prompt: "Return the character at index i."
         language: python
         starter_code: |
@@ -54,6 +63,9 @@ slots:
       - id: strings_s1_mcq_immutability
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [immutability, memory_management]
+        probe_cost: 0.5
         prompt: "In many languages like Python or Java, what happens when you 'change' a character in a string?"
         options:
           - "The character is updated in the original memory block"
@@ -67,6 +79,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [immutability]
+        probe_cost: 0.5
         prompt: |
           Strings are often immutable. Think of them as a printed page. 
           To change a word, you can't erase it; you must print a whole new page 
@@ -93,6 +108,9 @@ slots:
       - id: strings_s2_count_vowels
         type: coding
         difficulty: easy
+        role: proof
+        invariant_targets: [iteration, state]
+        probe_cost: 1.0
         prompt: "Count vowels in a string."
         language: python
         starter_code: |
@@ -103,6 +121,9 @@ slots:
       - id: strings_s2_frequency
         type: coding
         difficulty: easy
+        role: proof
+        invariant_targets: [frequency, traversal]
+        probe_cost: 1.0
         prompt: "Return a frequency dictionary of characters."
         language: python
         starter_code: |
@@ -113,6 +134,9 @@ slots:
       - id: strings_s2_remediation
         base_id: strings_s2_frequency
         type: explanation
+        role: reinforcement
+        invariant_targets: [strings]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -122,6 +146,9 @@ slots:
       - id: strings_s2_mcq_frequency
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [frequency_counting, time_complexity]
+        probe_cost: 0.5
         prompt: "Which data structure is most efficient for counting the frequency of every character in a long string?"
         options:
           - "A sorted list"
@@ -135,6 +162,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [hash_map, O(1)]
+        probe_cost: 0.5
         prompt: |
           A hash map (dictionary) allows us to look up and update the count 
           for any character in constant time, O(1), making it the fastest choice.
@@ -160,6 +190,9 @@ slots:
       - id: strings_s3_longest_unique
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [sliding_window, substring]
+        probe_cost: 1.2
         prompt: "Find length of longest substring without repeating characters."
         language: python
         starter_code: |
@@ -170,6 +203,9 @@ slots:
       - id: strings_s3_remediation
         base_id: strings_s3_longest_unique
         type: explanation
+        role: reinforcement
+        invariant_targets: [strings]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -179,6 +215,9 @@ slots:
       - id: strings_s3_mcq_sliding_window
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [substrings, combinations]
+        probe_cost: 0.5
         prompt: "How many substrings are in a string of length N?"
         options:
           - "N"
@@ -192,6 +231,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [complexity]
+        probe_cost: 0.5
         prompt: |
           There are N choices for the start and roughly N choices for the end,
           leading to about N*(N+1)/2 substrings, which is O(N^2).
@@ -217,6 +259,9 @@ slots:
       - id: strings_s4_reverse
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [immutability, builders]
+        probe_cost: 1.2
         prompt: "Reverse a string efficiently."
         language: python
         starter_code: |
@@ -227,6 +272,9 @@ slots:
       - id: strings_s4_remediation
         base_id: strings_s4_reverse
         type: explanation
+        role: reinforcement
+        invariant_targets: [strings]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -236,6 +284,9 @@ slots:
       - id: strings_s4_mcq_concatenation
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [immutability, concatenation_cost]
+        probe_cost: 0.5
         prompt: "Why is repeated string concatenation inside a loop (str += char) considered inefficient?"
         options:
           - "It makes the string too long to process"
@@ -249,6 +300,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [time_complexity]
+        probe_cost: 0.5
         prompt: |
           Because strings are immutable, `s += 'a'` creates a new string 
           of size `len(s)+1`. If done in a loop, you copy 1, then 2, then 3 characters, 
@@ -275,6 +329,9 @@ slots:
       - id: strings_s5_naive_match
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [pattern_matching]
+        probe_cost: 1.2
         prompt: "Return first index of pattern in text or -1."
         language: python
         starter_code: |
@@ -285,6 +342,9 @@ slots:
       - id: strings_s5_remediation
         base_id: strings_s5_naive_match
         type: explanation
+        role: reinforcement
+        invariant_targets: [strings]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -294,6 +354,9 @@ slots:
       - id: strings_s5_mcq_naive_search
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [complexity, search_algorithms]
+        probe_cost: 0.5
         prompt: "What is the worst-case time complexity of a naive string search for a pattern of length M in a text of length N?"
         options:
           - "O(N)"
@@ -307,6 +370,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [worst_case]
+        probe_cost: 0.5
         prompt: |
           In the worst case (e.g., searching "AAAAAB" in "AAAAAAAAA"), 
           for every position in the text (N), we might check all characters 
@@ -333,6 +399,9 @@ slots:
       - id: strings_s6_compare
         type: coding
         difficulty: easy
+        role: proof
+        invariant_targets: [encoding, normalization]
+        probe_cost: 1.0
         prompt: "Implement case-insensitive comparison."
         language: python
         starter_code: |
@@ -343,6 +412,9 @@ slots:
       - id: strings_s6_remediation
         base_id: strings_s6_compare
         type: explanation
+        role: reinforcement
+        invariant_targets: [strings]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -352,6 +424,9 @@ slots:
       - id: strings_s6_mcq_encoding
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [encoding, ordinal_comparison]
+        probe_cost: 0.5
         prompt: "Why can we use 'ord(char)' in Python to compare the order of two strings?"
         options:
           - "It returns the character's lucky number"
@@ -365,6 +440,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [ascii_unicode]
+        probe_cost: 0.5
         prompt: |
           Computers don't know 'A' or 'B'; they know numbers. Lexicographical 
           order is based on the underlying numeric codes assigned to each 
@@ -389,6 +467,9 @@ slots:
       - id: strings_s7_valid_palindrome
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [two_pointers, normalization]
+        probe_cost: 1.2
         prompt: "Check if a string is a palindrome after removing non-alphanumeric characters."
         language: python
         starter_code: |
@@ -399,6 +480,9 @@ slots:
       - id: strings_s7_remediation
         base_id: strings_s7_valid_palindrome
         type: explanation
+        role: reinforcement
+        invariant_targets: [strings]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -409,6 +493,9 @@ slots:
       - id: strings_s7_mcq_two_pointers
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [two_pointers, symmetry]
+        probe_cost: 0.5
         prompt: "When checking if a string is a palindrome using two pointers, what is the terminating condition?"
         options:
           - "When the left pointer reaches the end"
@@ -422,6 +509,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [pointers]
+        probe_cost: 0.5
         prompt: |
           The pointers move toward each other. Once they cross or meet in the 
           middle, you have checked all symmetric pairs and the process is complete.
@@ -445,6 +535,9 @@ slots:
       - id: strings_s8_compress
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [encoding, repetition]
+        probe_cost: 1.2
         prompt: "Implement basic run-length encoding (e.g., 'aaabb' -> 'a3b2')."
         language: python
         starter_code: |
@@ -455,6 +548,9 @@ slots:
       - id: strings_s8_remediation
         base_id: strings_s8_compress
         type: explanation
+        role: reinforcement
+        invariant_targets: [strings]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -465,6 +561,9 @@ slots:
       - id: strings_s8_mcq_compression
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [compression, efficiency]
+        probe_cost: 0.5
         prompt: "Why might a compressed string sometimes be longer than the original string?"
         options:
           - "Compression always makes strings shorter"
@@ -478,6 +577,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [RLE]
+        probe_cost: 0.5
         prompt: |
           Run-length encoding (RLE) depends on groups of identical characters. 
           If characters are unique, you add a 'length' character for every single 
@@ -501,6 +603,9 @@ slots:
       - id: strings_s9_lcp
         type: coding
         difficulty: easy
+        role: proof
+        invariant_targets: [alignment, set_intersection]
+        probe_cost: 1.0
         prompt: "Find the longest common prefix among an array of strings."
         language: python
         starter_code: |
@@ -511,6 +616,9 @@ slots:
       - id: strings_s9_remediation
         base_id: strings_s9_lcp
         type: explanation
+        role: reinforcement
+        invariant_targets: [strings]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -520,6 +628,9 @@ slots:
       - id: strings_s9_mcq_prefix
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [prefixes, comparison]
+        probe_cost: 0.5
         prompt: "If the first characters of two strings don't match, what is their longest common prefix?"
         options:
           - "The shorter string"
@@ -533,6 +644,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [edge_cases]
+        probe_cost: 0.5
         prompt: |
           A common prefix must exist at the very beginning of all strings.
           If even the first character is different, there is no shared start.
@@ -555,6 +669,9 @@ slots:
       - id: strings_s10_rolling_hash_model
         type: explanation
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [hashing, sliding_window, Rabin-Karp]
+        probe_cost: 0.8
         prompt: |
           Explain the 'Rolling Hash' technique. How does it allow us to search for a pattern 
           of length M in a text of length N in O(N) time?
@@ -564,6 +681,9 @@ slots:
       - id: strings_s10_remediation
         base_id: strings_s10_rolling_hash_model
         type: explanation
+        role: reinforcement
+        invariant_targets: [strings]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -573,6 +693,9 @@ slots:
       - id: strings_s10_mcq_rolling_hash
         type: mcq
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [rolling_hash, complexity]
+        probe_cost: 0.5
         prompt: "What is the main benefit of a 'Rolling Hash' over a standard hash function in substring search?"
         options:
           - "It produces fewer collisions"
@@ -586,6 +709,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [hashing_efficiency]
+        probe_cost: 0.5
         prompt: |
           A standard hash would require O(M) time to recompute for every window.
           A rolling hash allows us to update the hash value based only on the
@@ -610,6 +736,9 @@ slots:
       - id: strings_s11_is_anagram
         type: coding
         difficulty: easy
+        role: proof
+        invariant_targets: [frequency_counting, permutations]
+        probe_cost: 1.0
         prompt: "Determine if two strings are anagrams of each other."
         language: python
         starter_code: |
@@ -620,6 +749,9 @@ slots:
       - id: strings_s11_remediation
         base_id: strings_s11_is_anagram
         type: explanation
+        role: reinforcement
+        invariant_targets: [strings]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -629,6 +761,9 @@ slots:
       - id: strings_s11_mcq_anagrams
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [anagrams, invariants]
+        probe_cost: 0.5
         prompt: "If two strings have different lengths, can they be anagrams?"
         options:
           - "Yes, if they share the same unique characters"
@@ -642,6 +777,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [counting]
+        probe_cost: 0.5
         prompt: |
           Anagrams must have the exact same characters in the exact same frequencies.
           If the lengths differ, it's impossible for the counts to match exactly.
@@ -666,6 +804,9 @@ slots:
       - id: string_s12_atoi
         type: coding
         difficulty: hard
+        role: stretch
+        invariant_targets: [parsing, state_machines, boundary_control]
+        probe_cost: 1.2
         prompt: "Implement the myAtoi(s) function, which converts a string to a 32-bit signed integer."
         language: python
         starter_code: |
@@ -677,6 +818,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [flow_control]
+        probe_cost: 0.5
         prompt: |
           Think of a flowchart.
           1. Skip spaces.
@@ -689,6 +833,9 @@ slots:
       - id: string_s12_mcq_overflow
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [overflow_prevention]
+        probe_cost: 0.5
         prompt: "Why must we check for overflow BEFORE multiplying the current sum by 10 during parsing?"
         options:
           - "Because multiplication is slow"
@@ -702,6 +849,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [data_integrity]
+        probe_cost: 0.5
         prompt: |
           In systems with fixed-width integers (like 32-bit), once you pass 
           the limit, the number might become negative or inaccurate. Checking 

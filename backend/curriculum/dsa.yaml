@@ -28,32 +28,88 @@ phases:
 
     slots:
 
+      # -------- FOUNDATIONS --------
+
+      - slot_id: CORE_SLOT_1_COMPLEXITY_GROWTH
+        skill: complexity
+        difficulty: easy
+        type: mcq
+        governance:
+          skip_if:
+            complexity: ">0.7"
+
+      - slot_id: CORE_SLOT_2_COMPLEXITY_LOGARITHMS
+        skill: complexity
+        difficulty: medium
+        type: explanation
+
+      - slot_id: CORE_SLOT_3_COMPLEXITY_LOOPS
+        skill: complexity
+        difficulty: medium
+        type: explanation
+
+      - slot_id: CORE_SLOT_4_COMPLEXITY_NESTED
+        skill: complexity
+        difficulty: hard
+        type: explanation
+
+      - slot_id: CORE_SLOT_5_COMPLEXITY_SPACE
+        skill: complexity
+        difficulty: medium
+        type: mcq
+
+      - slot_id: CORE_SLOT_6_COMPLEXITY_WORST_CASE
+        skill: complexity
+        difficulty: easy
+        type: explanation
+
       # -------- ARRAYS --------
 
       - slot_id: ARRAY_SLOT_1_MEMORY_MODEL
         skill: arrays
         difficulty: easy
         type: explanation
+        governance:
+          skip_if:
+            arrays: ">0.8"
+          reinforce_if:
+            arrays: "<0.4"
 
       - slot_id: ARRAY_SLOT_2_ITERATION
         skill: arrays
         difficulty: easy
         type: coding
+        governance:
+          entry_requirements:
+            arrays: ">0.3"
+          skip_if:
+            arrays: ">0.85"
+          reinforce_if:
+            arrays: "<0.45"
 
       - slot_id: ARRAY_SLOT_3_SUBARRAY
         skill: arrays
         difficulty: easy
         type: explanation
+        governance:
+          entry_requirements:
+            arrays: ">0.4"
 
       - slot_id: ARRAY_SLOT_4_SHIFTING_MODEL
         skill: arrays
         difficulty: easy
         type: coding
+        governance:
+          reinforce_if:
+            arrays: "<0.5"
 
       - slot_id: ARRAY_SLOT_5_POSITIONAL_COST
         skill: arrays
         difficulty: medium
         type: explanation
+        governance:
+          promote_if:
+            arrays: ">0.9"
 
       - slot_id: ARRAY_SLOT_6_ACCESS_VS_SEARCH
         skill: arrays
@@ -64,6 +120,9 @@ phases:
         skill: arrays
         difficulty: medium
         type: coding
+        governance:
+           reinforce_if:
+              arrays: "<0.55"
 
       - slot_id: ARRAY_SLOT_8_OPTIMIZATION
         skill: arrays
@@ -152,6 +211,63 @@ phases:
         difficulty: hard
         type: coding
 
+      # -------- SORTING FOUNDATIONS (BASIC) --------
+
+      - slot_id: SORT_SLOT_1_BUBBLE
+        skill: sorting_basics
+        difficulty: easy
+        type: coding
+
+      - slot_id: SORT_SLOT_2_SELECTION
+        skill: sorting_basics
+        difficulty: easy
+        type: coding
+
+      - slot_id: SORT_SLOT_3_INSERTION
+        skill: sorting_basics
+        difficulty: easy
+        type: coding
+
+# =========================================================
+# PHASE 1.5 — THE RECURSIVE STACK
+# =========================================================
+
+  - phase_id: DSA_PHASE_1_5_RECURSION
+    name: The Recursive Stack & Functional Priming
+    objective: >
+      Install the mental model of self-similarity, base cases, and the
+      physical system call stack. Transition from iterative to recursive reasoning.
+
+    unlock_condition:
+      type: phase_complete
+      requires: DSA_PHASE_1_CONTIGUOUS_MEMORY
+
+    mastery:
+      pass_score: 0.72
+      min_confidence: 0.55
+
+    slots:
+
+      - slot_id: RECURSION_SLOT_1_CALL_STACK
+        skill: recursion
+        difficulty: easy
+        type: explanation
+
+      - slot_id: RECURSION_SLOT_2_BASE_CASES
+        skill: recursion
+        difficulty: easy
+        type: explanation
+
+      - slot_id: RECURSION_SLOT_3_TAIL_RECURSION
+        skill: recursion
+        difficulty: medium
+        type: explanation
+
+      - slot_id: RECURSION_SLOT_4_RECURRENCE_RELATION
+        skill: recursion
+        difficulty: medium
+        type: explanation
+
 # =========================================================
 # PHASE 2 — INDIRECT MEMORY & POINTER STRUCTURES
 # =========================================================
@@ -164,13 +280,18 @@ phases:
 
     unlock_condition:
       type: phase_complete
-      requires: DSA_PHASE_1_CONTIGUOUS_MEMORY
+      requires: DSA_PHASE_1_5_RECURSION
 
     mastery:
       pass_score: 0.72
       min_confidence: 0.55
 
     slots:
+
+      - slot_id: LINKED_LIST_SLOT_0_POINTER_MODEL
+        skill: linked_lists
+        difficulty: easy
+        type: explanation
 
       - slot_id: LINKED_LIST_SLOT_1_NODE_MODEL
         skill: linked_lists
@@ -528,5 +649,391 @@ phases:
 
       - slot_id: TREE_SLOT_12_SERIALIZATION
         skill: trees
+        difficulty: hard
+        type: coding
+
+# =========================================================
+# PHASE 6 — ORDERED COMPRESSION & PREFIX SYSTEMS
+# =========================================================
+
+  - phase_id: DSA_PHASE_6_HEAPS_TRIES
+    name: Priority & Prefix Structures
+    objective: >
+      Install implicit tree structures (heaps) and prefix-based
+      retrieval systems (tries).
+
+    unlock_condition:
+      type: phase_complete
+      requires: DSA_PHASE_5_HIERARCHY
+
+    mastery:
+      pass_score: 0.78
+      min_confidence: 0.65
+
+    slots:
+
+      # -------- HEAPS --------
+
+      - slot_id: HEAP_SLOT_1_PROPERTY
+        skill: heaps_tries
+        difficulty: easy
+        type: explanation
+
+      - slot_id: HEAP_SLOT_2_INSERTION
+        skill: heaps_tries
+        difficulty: medium
+        type: coding
+
+      - slot_id: HEAP_SLOT_3_EXTRACTION
+        skill: heaps_tries
+        difficulty: medium
+        type: coding
+
+      - slot_id: HEAP_SLOT_4_ARRAY_REPRESENTATION
+        skill: heaps_tries
+        difficulty: easy
+        type: explanation
+
+      - slot_id: HEAP_SLOT_5_PRIORITY_QUEUE
+        skill: heaps_tries
+        difficulty: medium
+        type: coding
+
+      - slot_id: HEAP_SLOT_6_KTH_ELEMENT
+        skill: heaps_tries
+        difficulty: medium
+        type: coding
+
+      # -------- TRIES --------
+
+      - slot_id: TRIE_SLOT_1_STRUCTURE
+        skill: heaps_tries
+        difficulty: easy
+        type: explanation
+
+      - slot_id: TRIE_SLOT_2_INSERTION
+        skill: heaps_tries
+        difficulty: medium
+        type: coding
+
+      - slot_id: TRIE_SLOT_3_PREFIX_SEARCH
+        skill: heaps_tries
+        difficulty: medium
+        type: coding
+
+      - slot_id: TRIE_SLOT_4_WORD_SEARCH
+        skill: heaps_tries
+        difficulty: medium
+        type: coding
+
+      - slot_id: TRIE_SLOT_5_WILDCARD
+        skill: heaps_tries
+        difficulty: hard
+        type: coding
+
+      - slot_id: TRIE_SLOT_6_AUTOCOMPLETE
+        skill: heaps_tries
+        difficulty: hard
+        type: coding
+
+# =========================================================
+# PHASE 7 — RELATIONAL SYSTEMS
+# =========================================================
+
+  - phase_id: DSA_PHASE_7_RELATIONAL
+    name: Graph Theory & Traversal
+    objective: >
+      Install general relational modeling, non-hierarchical traversal,
+      and connectivity invariance.
+
+    unlock_condition:
+      type: phase_complete
+      requires: DSA_PHASE_6_HEAPS_TRIES
+
+    mastery:
+      pass_score: 0.75
+      min_confidence: 0.60
+
+    slots:
+
+      # -------- BASICS & TRAVERSAL --------
+
+      - slot_id: GRAPH_SLOT_1_REPRESENTATION
+        skill: graphs
+        difficulty: easy
+        type: explanation
+
+      - slot_id: GRAPH_SLOT_2_BFS
+        skill: graphs
+        difficulty: medium
+        type: coding
+
+      - slot_id: GRAPH_SLOT_3_DFS
+        skill: graphs
+        difficulty: medium
+        type: coding
+
+      - slot_id: GRAPH_SLOT_4_CONNECTED_COMPONENTS
+        skill: graphs
+        difficulty: medium
+        type: coding
+
+      - slot_id: GRAPH_SLOT_5_CYCLE_DETECTION
+        skill: graphs
+        difficulty: medium
+        type: coding
+
+      - slot_id: GRAPH_SLOT_6_BIPARTITE
+        skill: graphs
+        difficulty: hard
+        type: coding
+
+      # -------- TOPOLOGY & UNION FIND --------
+
+      - slot_id: GRAPH_SLOT_7_TOPLOGICAL_SORT
+        skill: graphs
+        difficulty: medium
+        type: coding
+
+      - slot_id: GRAPH_SLOT_8_UNION_FIND
+        skill: graphs
+        difficulty: medium
+        type: explanation
+
+      - slot_id: GRAPH_SLOT_9_REDUNDANT_CONNECTION
+        skill: graphs
+        difficulty: medium
+        type: coding
+
+      # -------- SHORTEST PATH & MST --------
+
+      - slot_id: GRAPH_SLOT_10_DIJKSTRA
+        skill: graphs
+        difficulty: hard
+        type: coding
+
+      - slot_id: GRAPH_SLOT_11_BELLMAN_FORD_CONCEPT
+        skill: graphs
+        difficulty: hard
+        type: explanation
+
+      - slot_id: GRAPH_SLOT_12_MST_PRIM_KRUSKAL
+        skill: graphs
+        difficulty: hard
+        type: coding
+
+# =========================================================
+# PHASE 8 — ALGORITHMIC STRATEGY
+# =========================================================
+
+  - phase_id: DSA_PHASE_8_STRATEGY
+    name: Algorithmic Paradigms
+    objective: >
+      Install core problem-solving frameworks: Divide & Conquer,
+      Greedy accumulation, and Backtracking state-space search.
+
+    unlock_condition:
+      type: phase_complete
+      requires: DSA_PHASE_7_RELATIONAL
+
+    mastery:
+      pass_score: 0.75
+      min_confidence: 0.65
+
+    slots:
+
+      # -------- SORTING & SEARCHING (DIVIDE & CONQUER) --------
+
+      - slot_id: STRATEGY_SLOT_1_MERGE_SORT
+        skill: strategies
+        difficulty: medium
+        type: coding
+
+      - slot_id: STRATEGY_SLOT_2_QUICK_SORT
+        skill: strategies
+        difficulty: medium
+        type: coding
+
+      - slot_id: STRATEGY_SLOT_3_BINARY_SEARCH_ADV
+        skill: strategies
+        difficulty: medium
+        type: coding
+
+      # -------- GREEDY --------
+
+      - slot_id: STRATEGY_SLOT_4_GREEDY_LOGIC
+        skill: strategies
+        difficulty: easy
+        type: explanation
+
+      - slot_id: STRATEGY_SLOT_5_INTERVALS
+        skill: strategies
+        difficulty: medium
+        type: coding
+
+      - slot_id: STRATEGY_SLOT_6_HUFFMAN_CONCEPT
+        skill: strategies
+        difficulty: medium
+        type: explanation
+
+      # -------- BACKTRACKING --------
+
+      - slot_id: STRATEGY_SLOT_7_STATE_SPACE
+        skill: strategies
+        difficulty: easy
+        type: explanation
+
+      - slot_id: STRATEGY_SLOT_8_PERMUTATIONS
+        skill: strategies
+        difficulty: medium
+        type: coding
+
+      - slot_id: STRATEGY_SLOT_9_SUBSETS
+        skill: strategies
+        difficulty: medium
+        type: coding
+
+      - slot_id: STRATEGY_SLOT_10_COMBINATIONS
+        skill: strategies
+        difficulty: medium
+        type: coding
+
+      - slot_id: STRATEGY_SLOT_11_N_QUEENS
+        skill: strategies
+        difficulty: hard
+        type: coding
+
+      - slot_id: STRATEGY_SLOT_12_SUDOKU
+        skill: strategies
+        difficulty: hard
+        type: coding
+
+# =========================================================
+# PHASE 9 — DYNAMIC OPTIMIZATION
+# =========================================================
+
+  - phase_id: DSA_PHASE_9_DP
+    name: Dynamic Programming
+    objective: >
+      Install overlapping subproblem recognition, state transition modeling,
+      and memoization/tabulation patterns.
+
+    unlock_condition:
+      type: phase_complete
+      requires: DSA_PHASE_8_STRATEGY
+
+    mastery:
+      pass_score: 0.80
+      min_confidence: 0.70
+
+    slots:
+
+      - slot_id: DP_SLOT_1_MEMOIZATION
+        skill: dynamic_programming
+        difficulty: easy
+        type: explanation
+
+      - slot_id: DP_SLOT_2_FIBONACCI_CLIMBING
+        skill: dynamic_programming
+        difficulty: easy
+        type: coding
+
+      - slot_id: DP_SLOT_3_TABULATION
+        skill: dynamic_programming
+        difficulty: easy
+        type: explanation
+
+      - slot_id: DP_SLOT_4_1D_COST
+        skill: dynamic_programming
+        difficulty: medium
+        type: coding
+
+      - slot_id: DP_SLOT_5_HOUSE_ROBBER
+        skill: dynamic_programming
+        difficulty: medium
+        type: coding
+
+      - slot_id: DP_SLOT_6_LIS
+        skill: dynamic_programming
+        difficulty: medium
+        type: coding
+
+      - slot_id: DP_SLOT_7_2D_GRID
+        skill: dynamic_programming
+        difficulty: medium
+        type: coding
+
+      - slot_id: DP_SLOT_8_UNIQUE_PATHS
+        skill: dynamic_programming
+        difficulty: medium
+        type: coding
+
+      - slot_id: DP_SLOT_9_LCS
+        skill: dynamic_programming
+        difficulty: hard
+        type: coding
+
+      - slot_id: DP_SLOT_10_KNAPSACK_01
+        skill: dynamic_programming
+        difficulty: hard
+        type: coding
+
+      - slot_id: DP_SLOT_11_UNBOUNDED_KNAPSACK
+        skill: dynamic_programming
+        difficulty: hard
+        type: coding
+
+      - slot_id: DP_SLOT_12_EDIT_DISTANCE
+        skill: dynamic_programming
+        difficulty: hard
+        type: coding
+
+# =========================================================
+# PHASE 10 — BIT MANIPULATION & LOW-LEVEL PRIMITIVES
+# =========================================================
+
+  - phase_id: DSA_PHASE_10_BITWISE
+    name: Bit Manipulation & Architecture Primitives
+    objective: >
+      Install bitwise logic, masking, and low-level memory representation
+      for high-performance algorithms.
+
+    unlock_condition:
+      type: phase_complete
+      requires: DSA_PHASE_9_DP
+
+    mastery:
+      pass_score: 0.80
+      min_confidence: 0.70
+
+    slots:
+
+      - slot_id: BIT_SLOT_1_BINARY_MODEL
+        skill: bit_manipulation
+        difficulty: easy
+        type: explanation
+
+      - slot_id: BIT_SLOT_2_BASIC_OPS
+        skill: bit_manipulation
+        difficulty: easy
+        type: coding
+
+      - slot_id: BIT_SLOT_3_MASKING
+        skill: bit_manipulation
+        difficulty: medium
+        type: coding
+
+      - slot_id: BIT_SLOT_4_HAMMING_WEIGHT
+        skill: bit_manipulation
+        difficulty: medium
+        type: coding
+
+      - slot_id: BIT_SLOT_5_POWER_OF_TWO
+        skill: bit_manipulation
+        difficulty: medium
+        type: coding
+
+      - slot_id: BIT_SLOT_6_BIT_HACKING
+        skill: bit_manipulation
         difficulty: hard
         type: coding

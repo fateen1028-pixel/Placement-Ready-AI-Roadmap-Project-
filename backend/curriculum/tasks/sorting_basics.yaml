@@ -1,0 +1,205 @@
+skill: sorting_basics
+version: v1
+description: >
+  Basic comparison-based sorting algorithms used to teach array invariants,
+  nested loops, and swapping logic.
+
+slots:
+  - slot_id: SORT_SLOT_1_BUBBLE
+    mental_install: "Repeatedly swap adjacent elements to bubble the largest to the end."
+    invariant: "After i iterations, the largest i elements are in their final sorted positions."
+    mastery_signals:
+      - Implements inner loop with correct bounds (n-i-1)
+      - Explains O(N^2) worst case
+    hard_failures:
+      - Incorrect inner loop boundary causing index-out-of-bounds
+      - Doesn't stop when array is prematurely sorted (if optimized)
+
+    templates:
+      - id: sorting_s1_bubble_impl
+        type: coding
+        difficulty: easy
+        prompt: "Implement Bubble Sort for an integer array."
+        language: python
+        starter_code: |
+          def bubble_sort(arr):
+              pass
+        concepts: [swapping, nested_loops]
+
+      - id: sorting_s1_mcq_bubble_invariant
+        type: mcq
+        difficulty: medium
+        prompt: "After 1 full pass of Bubble Sort on an array of size N, what can we guarantee?"
+        options:
+          - "The whole array is sorted"
+          - "The smallest element is at index 0"
+          - "The largest element is at index N-1"
+          - "The array is half sorted"
+        correct_answer: 2
+        concepts: [invariants, pass_logic]
+
+      - id: sorting_s1_trace_pass
+        type: explanation
+        difficulty: medium
+        prompt: |
+          Trace 1 pass of Bubble Sort on [3, 1, 4, 2].
+          Show the array after every swap.
+        rubric: "Must show: [1, 3, 4, 2] -> [1, 3, 2, 4]."
+        concepts: [execution_trace, bubble_mechanics]
+
+      - id: sorting_s1_optimization
+        type: explanation
+        difficulty: hard
+        role: diagnostic
+        prompt: |
+          How can you stop Bubble Sort early if the array becomes sorted before all N-1 passes are done?
+        rubric: "Must mention tracking if any swaps occurred in a pass. If no swaps, array is sorted."
+        concepts: [early_exit, optimization]
+
+      - id: sorting_s1_remediation_bubbles
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          Imagine bubbles in a drink. Heavy bubbles (large numbers) rise (swap) to the top. 
+          Light bubbles (small numbers) stay at the bottom. 
+          Each pass, the biggest bubble remaining reaches its surface.
+        concepts: [analogy, mental_model]
+
+  - slot_id: SORT_SLOT_2_SELECTION
+    mental_install: "Find the minimum in the unsorted part and swap it to the front."
+    invariant: "The prefix [0..i] is sorted and contains the i smallest elements."
+    mastery_signals:
+      - Correctly tracks index of minimum element
+      - Performs only one swap per outer loop iteration
+    hard_failures:
+      - Swaps inside the inner loop (making it look like Bubble Sort)
+
+    templates:
+      - id: sorting_s2_selection_impl
+        type: coding
+        difficulty: easy
+        prompt: "Implement Selection Sort for an integer array."
+        language: python
+        starter_code: |
+          def selection_sort(arr):
+              pass
+        concepts: [selection, minimization]
+
+      - id: sorting_s2_mcq_selection_swaps
+        type: mcq
+        difficulty: medium
+        prompt: "What is the maximum number of swaps Selection Sort performs for an array of size N?"
+        options:
+          - "N^2"
+          - "N log N"
+          - "N - 1"
+          - "1"
+        correct_answer: 2
+        concepts: [swap_cost, complexity]
+
+      - id: sorting_s2_visual_diag
+        type: explanation
+        difficulty: medium
+        role: diagnostic
+        prompt: |
+          Selection Sort is running. The array is: `[1, 2, 8, 5, 9]`.
+          The prefix `[1, 2]` is already sorted. What is the NEXT step the algorithm takes?
+        rubric: "Must mention searching for the minimum in [8, 5, 9], finding 5, and swapping it with 8."
+        concepts: [execution_model, selection]
+
+      - id: sorting_s2_remediation_choice
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          Selection Sort is like a talent scout. In a crowd of people, 
+          you scan everyone to find the VERY best (minimum). 
+          Once you find them, you move them to the front of the line. 
+          Then you repeat for the next person in line.
+        concepts: [mental_model, selection]
+
+  - slot_id: SORT_SLOT_3_INSERTION
+    mental_install: "Build the sorted array one element at a time by inserting the current element into its correct spot."
+    invariant: "The prefix [0..i] is sorted relative to itself."
+    mastery_signals:
+      - Correctly shifts elements to make room
+      - Efficiently handles near-sorted data
+    hard_failures:
+      - Overwrites data during shifting
+    
+    templates:
+      - id: sorting_s3_insertion_impl
+        type: coding
+        difficulty: easy
+        prompt: "Implement Insertion Sort for an integer array."
+        language: python
+        starter_code: |
+          def insertion_sort(arr):
+              pass
+        concepts: [insertion, shifting]
+
+      - id: sorting_s3_mcq_best_case
+        type: mcq
+        difficulty: medium
+        prompt: "What is the Big O time complexity of Insertion Sort on an ALREADY sorted array?"
+        options:
+          - "O(1)"
+          - "O(N)"
+          - "O(N log N)"
+          - "O(N^2)"
+        correct_answer: 1
+        concepts: [best_case, complexity]
+
+      - id: sorting_s3_trace_insertion
+        type: explanation
+        difficulty: medium
+        prompt: |
+          Trace Insertion Sort as it inserts '3' into [1, 4, 5, 2].
+          Describe the shifting process.
+        rubric: "Must describe 5 moving to index 2, 4 moving to index 1, and 3 moving into index 1."
+        concepts: [shifting_logic]
+
+      - id: sorting_s3_remediation_cards
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          Insertion Sort is how people sort playing cards in their hands. 
+          You pick up a new card and slide it into the correct position 
+          among the cards you already hold.
+        concepts: [analogy, mental_model]
+      - Incorrectly compares with previous elements
+
+    templates:
+      - id: sorting_s3_insertion_impl
+        type: coding
+        difficulty: easy
+        prompt: "Implement Insertion Sort for an integer array."
+        language: python
+        starter_code: |
+          def insertion_sort(arr):
+              pass
+        concepts: [insertion, shifting]
+
+      - id: sorting_s3_mcq_insertion_efficiency
+        type: mcq
+        difficulty: medium
+        prompt: "In which case does Insertion Sort perform BEST (O(N) time)?"
+        options:
+          - "Randomly ordered array"
+          - "Array sorted in reverse order"
+          - "Already sorted array"
+          - "Array with all identical elements"
+        correct_answer: 2
+        concepts: [nearly_sorted, optimization]
+
+      - id: sorting_s3_remediation_cards
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          Think of sorting a hand of playing cards. You pick one card, 
+          look at the cards already in your hand, and slide it into the 
+          correct spot. This is Insertion Sort.
+        concepts: [mental_model, insertion]

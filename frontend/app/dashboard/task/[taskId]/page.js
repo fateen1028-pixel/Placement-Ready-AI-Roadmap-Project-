@@ -584,9 +584,7 @@ export default function TaskDetailPage({ params, searchParams }) {
            outputMsg += "\n\n🏆 Skills Mastered:\n- " + evaluation.mastered_invariants.join("\n- ");
         }
 
-        setTimeout(() => {
-           setShowBackButton(true);
-        }, 1500);
+        router.push("/dashboard");
       } else {
         outputMsg = "Some test cases failed. Try again! 💪\n\n";
         

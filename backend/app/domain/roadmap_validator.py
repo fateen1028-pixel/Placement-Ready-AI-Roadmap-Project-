@@ -80,6 +80,8 @@ def validate_roadmap_state(roadmap: RoadmapState) -> None:
         "completed",
         "failed",
         "remediation_required",
+        "skipped",
+        "reinforcement_required",
     }
 
     in_progress_count = 0

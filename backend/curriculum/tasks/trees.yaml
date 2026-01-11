@@ -24,6 +24,9 @@ slots:
       - id: tree_s1_depth
         type: explanation
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [hierarchy, recursion]
+        probe_cost: 0.8
         prompt: |
           Explain what a tree is and why recursion fits it naturally.
         rubric: "Must reference subtrees and hierarchical structure."
@@ -32,6 +35,9 @@ slots:
       - id: tree_s1_remediation
         base_id: tree_s1_depth
         type: explanation
+        role: reinforcement
+        invariant_targets: [trees]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -41,6 +47,9 @@ slots:
       - id: tree_s1_mcq_leaf
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [tree_terminology]
+        probe_cost: 0.5
         prompt: "What is the defining characteristic of a 'leaf' node in a tree?"
         options:
           - "It is the very first node (top)"
@@ -54,6 +63,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [hierarchy]
+        probe_cost: 0.5
         prompt: |
           Just like a real tree, the 'leaves' are at the very ends of the 
           branches. They don't grow any further branches (children).
@@ -77,6 +89,9 @@ slots:
       - id: tree_s2_traversal
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [dfs, traversal]
+        probe_cost: 1.2
         prompt: "Return inorder traversal of binary tree."
         language: python
         starter_code: |
@@ -87,6 +102,9 @@ slots:
       - id: tree_s2_remediation
         base_id: tree_s2_traversal
         type: explanation
+        role: reinforcement
+        invariant_targets: [trees]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -96,6 +114,9 @@ slots:
       - id: tree_s2_mcq_bst_order
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [bst, traversal_properties]
+        probe_cost: 0.5
         prompt: "Which traversal of a Binary Search Tree (BST) visits the nodes in non-decreasing (sorted) order?"
         options:
           - "Preorder"
@@ -109,6 +130,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [sorting]
+        probe_cost: 0.5
         prompt: |
           In a BST, the left is smaller and the right is larger. 'Inorder' 
           visits (Left, Root, Right), which perfectly follows the 
@@ -133,6 +157,9 @@ slots:
       - id: tree_s3_height
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [recursion, aggregation]
+        probe_cost: 1.2
         prompt: "Compute height of binary tree."
         language: python
         starter_code: |
@@ -143,6 +170,9 @@ slots:
       - id: tree_s3_remediation
         base_id: tree_s3_height
         type: explanation
+        role: reinforcement
+        invariant_targets: [trees]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -152,6 +182,9 @@ slots:
       - id: tree_s3_mcq_height_base
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [recursion, boundary_cases]
+        probe_cost: 0.5
         prompt: "In the recursive formula `height = 1 + max(left_height, right_height)`, what should the function return when it reaches a `None` (Null) node?"
         options:
           - "0"
@@ -165,6 +198,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [base_case]
+        probe_cost: 0.5
         prompt: |
           The 'Base Case' must be neutral. If a leaf (height 0 or 1) is 
           calculated from its children, those Null children must return 
@@ -189,6 +225,9 @@ slots:
       - id: tree_s4_validate
         type: coding
         difficulty: hard
+        role: stretch
+        invariant_targets: [ordered_structure, invariants]
+        probe_cost: 1.2
         prompt: "Validate a binary search tree."
         language: python
         starter_code: |
@@ -199,6 +238,9 @@ slots:
       - id: tree_s4_remediation
         base_id: tree_s4_validate
         type: explanation
+        role: reinforcement
+        invariant_targets: [trees]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -208,6 +250,9 @@ slots:
       - id: tree_s4_mcq_bst_range
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [bst_invariants]
+        probe_cost: 0.5
         prompt: "When validating a BST, what must stay true for all nodes in the right subtree of the root?"
         options:
           - "They must all be smaller than the root"
@@ -221,6 +266,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [transitive_property]
+        probe_cost: 0.5
         prompt: |
           A BST isn't just about the immediate children. Every single node to 
            the right of the root—no matter how deep—must be strictly 
@@ -245,6 +293,9 @@ slots:
       - id: tree_s5_levelorder
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [bfs, queue, levels]
+        probe_cost: 1.2
         prompt: "Return the level order traversal of a binary tree (list of lists)."
         language: python
         starter_code: |
@@ -255,6 +306,9 @@ slots:
       - id: tree_s5_remediation
         base_id: tree_s5_levelorder
         type: explanation
+        role: reinforcement
+        invariant_targets: [trees]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -264,6 +318,9 @@ slots:
       - id: tree_s5_mcq_queue
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [bfs, data_structures]
+        probe_cost: 0.5
         prompt: "Which data structure is essential for implementing a non-recursive Level Order traversal (BFS)?"
         options:
           - "Stack"
@@ -277,6 +334,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [fifo]
+        probe_cost: 0.5
         prompt: |
           BFS works by 'first-in, first-out' (FIFO) logic. We process a node, 
           then put its children at the 'back of the line'. The Queue is 
@@ -300,6 +360,9 @@ slots:
       - id: tree_s6_deletion_logic
         type: explanation
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [postorder, memory_safety]
+        probe_cost: 0.8
         prompt: |
           Explain why postorder traversal is the standard choice for deleting a binary tree. What happens if you use preorder?
         rubric: "Must mention dependency resolution and avoiding loss of child access."
@@ -308,6 +371,9 @@ slots:
       - id: tree_s6_remediation
         base_id: tree_s6_deletion_logic
         type: explanation
+        role: reinforcement
+        invariant_targets: [trees]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -317,6 +383,9 @@ slots:
       - id: tree_s6_mcq_deletion_order
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [memory_safety, postorder]
+        probe_cost: 0.5
         prompt: "If you delete a parent node before its children, what happens in a language without garbage collection (like C++)?"
         options:
           - "The children are automatically deleted"
@@ -330,6 +399,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [pointers]
+        probe_cost: 0.5
         prompt: |
           A parent node 'owns' the addresses of its children. Deleting the parent 
           first 'burns the map' to the children, leaving them stranded in memory forever.
@@ -353,6 +425,9 @@ slots:
       - id: tree_s7_pathsum
         type: coding
         difficulty: easy
+        role: proof
+        invariant_targets: [recursion, state_tracking]
+        probe_cost: 1.0
         prompt: "Check if tree has a root-to-leaf path with sum equal to target."
         language: python
         starter_code: |
@@ -363,6 +438,9 @@ slots:
       - id: tree_s7_remediation
         base_id: tree_s7_pathsum
         type: explanation
+        role: reinforcement
+        invariant_targets: [trees]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -372,6 +450,9 @@ slots:
       - id: tree_s7_mcq_leaf_check
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [tree_terminology]
+        probe_cost: 0.5
         prompt: "In the 'Path Sum' problem, which condition correctly identifies a leaf node?"
         options:
           - "if not node:"
@@ -385,6 +466,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [logical_conjunction]
+        probe_cost: 0.5
         prompt: |
           A leaf is a dead-end. It has NO left child AND NO right child. 
           If either exists, you haven't reached the end of the path yet.
@@ -408,6 +492,9 @@ slots:
       - id: tree_s8_lca
         type: coding
         difficulty: medium
+        role: stretch
+        invariant_targets: [ancestry, bst]
+        probe_cost: 1.2
         prompt: "Find the Lowest Common Ancestor of two nodes in a BST."
         language: python
         starter_code: |
@@ -418,6 +505,9 @@ slots:
       - id: tree_s8_remediation
         base_id: tree_s8_lca
         type: explanation
+        role: reinforcement
+        invariant_targets: [trees]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -427,6 +517,9 @@ slots:
       - id: tree_s8_mcq_split
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [bst_properties, recursion]
+        probe_cost: 0.5
         prompt: "In a BST, if both target nodes P and Q are smaller than the current root, where must the LCA be?"
         options:
           - "In the right subtree"
@@ -440,6 +533,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [binary_search]
+        probe_cost: 0.5
         prompt: |
           Since the BST property is global, if both P and Q are smaller than the 
           root, they both inhabit the left side. We must 'descend' left to 
@@ -464,6 +560,9 @@ slots:
       - id: tree_s9_build
         type: coding
         difficulty: hard
+        role: stretch
+        invariant_targets: [traversal, split_and_conquer]
+        probe_cost: 1.2
         prompt: "Construct a binary tree from preorder and inorder traversals."
         language: python
         starter_code: |
@@ -474,6 +573,9 @@ slots:
       - id: tree_s9_remediation
         base_id: tree_s9_build
         type: explanation
+        role: reinforcement
+        invariant_targets: [trees]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -483,6 +585,9 @@ slots:
       - id: tree_s9_mcq_unique
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [tree_reconstruction]
+        probe_cost: 0.5
         prompt: "Why is an 'Inorder' traversal necessary for unique tree reconstruction?"
         options:
           - "Because it identifies the root"
@@ -496,6 +601,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [subproblem_split]
+        probe_cost: 0.5
         prompt: |
           Preorder tells you WHO the root is, but it doesn't tell you how many 
           nodes are on its left or right. Inorder tells you EXACTLY who is 
@@ -520,6 +628,9 @@ slots:
       - id: tree_s10_symmetric
         type: coding
         difficulty: easy
+        role: proof
+        invariant_targets: [symmetry, recursion]
+        probe_cost: 1.0
         prompt: "Determine if a binary tree is a mirror of itself."
         language: python
         starter_code: |
@@ -530,6 +641,9 @@ slots:
       - id: tree_s10_remediation
         base_id: tree_s10_symmetric
         type: explanation
+        role: reinforcement
+        invariant_targets: [trees]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -539,6 +653,9 @@ slots:
       - id: tree_s10_mcq_mirror
         type: mcq
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [symmetry, invariants]
+        probe_cost: 0.5
         prompt: "To check if two subtrees are mirrors, if you are at nodes L and R, what should you compare next?"
         options:
           - "L.left with R.left"
@@ -552,6 +669,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [mirroring]
+        probe_cost: 0.5
         prompt: |
           Symmetry means 'flipped'. The outer branches must match, and the 
           inner branches must match. It's like folding a piece of paper.
@@ -575,6 +695,9 @@ slots:
       - id: tree_s11_bst_vs_list
         type: explanation
         difficulty: medium
+        role: diagnostic
+        invariant_targets: [complexity, tradeoffs]
+        probe_cost: 0.8
         prompt: |
           Compare searching for an element in a sorted list vs a balanced BST. 
           When would you choose the list?
@@ -584,6 +707,9 @@ slots:
       - id: tree_s11_remediation
         base_id: tree_s11_bst_vs_list
         type: explanation
+        role: reinforcement
+        invariant_targets: [trees]
+        probe_cost: 0.5
         variant: remediation
         strategy: explanation
         prompt: |
@@ -593,6 +719,9 @@ slots:
       - id: tree_s11_mcq_skewed
         type: mcq
         difficulty: easy
+        role: diagnostic
+        invariant_targets: [worst_case, complexity]
+        probe_cost: 0.5
         prompt: "What is the time complexity of searching in a BST that has been 'skewed' (every node has only a right child)?"
         options:
           - "$O(1)$"
@@ -606,6 +735,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: easy
+        role: reinforcement
+        invariant_targets: [degeneration]
+        probe_cost: 0.5
         prompt: |
           A skewed tree is just a Linked List in disguise! Without the 
           'balance' to provide shortcuts, we have to look at every single 
@@ -630,6 +762,9 @@ slots:
       - id: tree_s12_serialize
         type: coding
         difficulty: hard
+        role: stretch
+        invariant_targets: [serialization, string_parsing, tree_reconstruction]
+        probe_cost: 1.2
         prompt: "Design an algorithm to serialize and deserialize a binary tree."
         language: python
         starter_code: |
@@ -642,6 +777,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: hard
+        role: reinforcement
+        invariant_targets: [mapping_logic]
+        probe_cost: 0.5
         prompt: |
           Think of 'Flattening' the tree. 
           1. Use Preorder traversal (Root -> Left -> Right).
@@ -652,6 +790,9 @@ slots:
       - id: tree_s12_mcq_uniqueness
         type: mcq
         difficulty: hard
+        role: diagnostic
+        invariant_targets: [structural_integrity]
+        probe_cost: 0.5
         prompt: "Why can't we reconstruct a tree from just a Preorder sequence if we EXCLUDE the null nodes?"
         options:
           - "Because preorder is too fast"
@@ -665,6 +806,9 @@ slots:
         type: explanation
         variant: remediation
         difficulty: medium
+        role: reinforcement
+        invariant_targets: [uniqueness_invariants]
+        probe_cost: 0.5
         prompt: |
           In a full binary tree with null markers, every leaf has two null 
           children. These markers act like 'parentheses' in an expression, 

@@ -46,11 +46,18 @@ class TaskFactory:
             # Case 2: Nested templates inside slots (as in arrays.yaml)
             for slot_entry in data.get("slots", []):
                 slot_id = slot_entry.get("slot_id")
+                mastery_signals = slot_entry.get("mastery_signals", [])
+                
                 for t_data in slot_entry.get("templates", []):
                     if "skill" not in t_data:
                         t_data["skill"] = data.get("skill", skill)
                     if "slot_id" not in t_data:
                         t_data["slot_id"] = slot_id
+                    
+                    # Propagate mastery signals if not explicitly set on template
+                    if "invariant_targets" not in t_data and mastery_signals:
+                        t_data["invariant_targets"] = mastery_signals
+                        
                     templates.append(TaskTemplate(**t_data))
                 
             cls._cache[skill] = templates

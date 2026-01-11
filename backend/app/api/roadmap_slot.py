@@ -11,6 +11,9 @@ from app.domain.task_template_loader import get_task_template
 from app.services.ai_services import AIService
 from app.services.slot_start_service import start_slot as start_slot_domain
 from app.domain.task_template_resolver import resolve_task_template_id
+from app.domain.governance_engine import apply_governance_to_roadmap
+from app.services.learning_state_service import get_decision_context
+from app.services.curriculum_service import CurriculumService
 from app.core.exceptions import TemplateResolutionError, ConcurrencyError
 
 
@@ -54,17 +57,48 @@ async def start_slot(
         except ValueError:
             raise HTTPException(404, f"Slot {slot_id} not found")
 
+        # 1. Build DecisionContext (Adaptive V3)
+        context = await get_decision_context(db, str(current_user["_id"]), track_id="dsa")
+        
+        # 2. Apply Governance (Auto-skip/Reinforce/Promote)
+        curriculum = CurriculumService.get_curriculum("dsa")
+        apply_governance_to_roadmap(roadmap, curriculum, context)
+        
+        # Re-fetch slot in case status changed during governance
+        target_slot = roadmap.get_slot(slot_id)
+        
+        if target_slot.status == "skipped":
+             raise HTTPException(400, "This slot was automatically skipped due to your skill level. Please refresh your roadmap.")
+
+        # 3. Resolve Template using Orchestrator
         task_template_id = resolve_task_template_id(
             slot=target_slot,
+            context=context,
         )
         
         task_template = get_task_template(task_template_id)
+
+        # V4: Global Intervention Handling
+        # If the Orchestrator returned a template from a different slot/skill,
+        # we consider this an "Intervention Task". 
+        # We tag it in parameters eventually, but right now we ensure it runs 
+        # in the current slot context, effectively "injecting" the content.
+        is_intervention = False
+        if task_template.slot_id and task_template.slot_id != slot_id:
+            is_intervention = True
+            # We could add specific headers or logging here if needed.
 
         task_instance = start_slot_domain(
             roadmap=roadmap,
             slot_id=slot_id,
             task_template=task_template,
+            context=context,
         )
+
+        if is_intervention:
+            # Strict tagging of intervention
+            task_instance.parameters["is_intervention"] = True
+            task_instance.parameters["original_slot_id"] = task_template.slot_id
     except TemplateResolutionError as e:
         raise HTTPException(500, f"Configuration Error: {e}")
     except RuntimeError as e:

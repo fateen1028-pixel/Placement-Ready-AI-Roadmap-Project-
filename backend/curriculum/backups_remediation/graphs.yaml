@@ -1,0 +1,441 @@
+skill: graphs
+version: v1
+description: >
+  Curriculum for Graph Theory and Algorithms.
+  Focuses on relational modeling, traversal strategies (BFS/DFS), 
+  topology, and optimization (Shortest Path/MST).
+
+slots:
+
+# =========================================================
+# SLOT 1 — GRAPH REPRESENTATION
+# =========================================================
+
+  - slot_id: GRAPH_SLOT_1_REPRESENTATION
+    mental_install: "Nodes are entities; Edges are relationships."
+    invariant: "Representation choice (Matrix vs List) dictates transition cost."
+    mastery_signals:
+      - Comparison of Adjacency List vs Matrix
+      - Understanding of directed vs undirected
+    hard_failures:
+      - Uses matrix for sparse graphs (space waste)
+      - Confuses directed edge direction
+
+    templates:
+      - id: graph_s1_choices
+        type: explanation
+        difficulty: easy
+        role: diagnostic
+        invariant_targets: [graph_model]
+        probe_cost: 0.8
+        prompt: >
+          You have a social network with 1 million users but average 50 friends each.
+          Why is an Adjacency Matrix a bad choice?
+        rubric: "Must mention O(V^2) space complexity vs O(V+E) for sparse graphs."
+        concepts: [complexity, space_optimization]
+
+# =========================================================
+# SLOT 2 — BREADTH-FIRST SEARCH (BFS)
+# =========================================================
+
+  - slot_id: GRAPH_SLOT_2_BFS
+    mental_install: "Ripple effect: Visit neighbors level by level."
+    invariant: "Finds shortest path in unweighted graphs."
+    mastery_signals:
+      - Uses Queue correctly
+      - Tracks visited set to avoid cycles
+    hard_failures:
+      - Uses Stack (DFS)
+      - Infinite loop (no visited set)
+
+    templates:
+      - id: graph_s2_bfs_code
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [bfs, layering]
+        probe_cost: 1.0
+        prompt: "Implement BFS to print all nodes reachable from a start node."
+        language: python
+        starter_code: |
+          from collections import deque
+          def bfs(graph, start):
+              pass
+        concepts: [bfs, queue]
+
+# =========================================================
+# SLOT 3 — DEPTH-FIRST SEARCH (DFS)
+# =========================================================
+
+  - slot_id: GRAPH_SLOT_3_DFS
+    mental_install: "Maze solving: Go deep, hit dead end, backtrack."
+    invariant: "Exhausts one branch before starting another."
+    mastery_signals:
+      - Implements Recursion or Stack
+      - Handles backtracking implicitly/explicitly
+    hard_failures:
+      - Stack overflow on deep graphs (without limit)
+      - Fails reference cycle check
+
+    templates:
+      - id: graph_s3_dfs_code
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [dfs, recursion]
+        probe_cost: 1.0
+        prompt: "Implement DFS (recursive or iterative) to traverse the graph."
+        concepts: [dfs, recursion]
+
+# =========================================================
+# SLOT 4 — CONNECTED COMPONENTS
+# =========================================================
+
+  - slot_id: GRAPH_SLOT_4_CONNECTED_COMPONENTS
+    mental_install: "Islands in an ocean."
+    invariant: "Traversal from any node covers its entire component."
+    mastery_signals:
+      - Loops through all nodes to start traversals
+      - Counts distinct islands
+    hard_failures:
+      - Only runs one traversal (missing isolated islands)
+
+    templates:
+      - id: graph_s4_island_count
+        type: coding
+        difficulty: medium
+        prompt: "Return the number of connected components in an undirected graph."
+        language: python
+        starter_code: |
+          def count_components(n, edges):
+              pass
+        concepts: [connectivity, traversal_loop]
+
+      - id: graph_s4_remediation_postal
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          Connected components are like separate islands. 
+          To find all of them, you must visit every house (node). 
+          If you start at one house and visit everyone they know, 
+          you’ve mapped one island. But you might need to take a boat 
+          to start fresh at a house you haven't seen yet!
+        concepts: [analogy, coverage]
+
+  - slot_id: GRAPH_SLOT_5_CYCLE_DETECTION
+    mental_install: "Back-edges indicate feedback loops."
+    invariant: "A cycle exists if we visit a node currently in the recursion stack (directed) or a visited neighbor that isn't the parent (undirected)."
+    mastery_signals:
+      - Uses a 'path' set or 'visiting' color for directed graphs
+      - Handles the 'parent' edge correctly for undirected graphs
+    hard_failures:
+      - Confuses visited set with recursion stack in directed graphs
+      - Reports parent-child edges as cycles in undirected graphs
+
+    templates:
+      - id: graph_s5_directed_cycle
+        type: coding
+        difficulty: medium
+        prompt: "Detect if a directed graph contains a cycle."
+        language: python
+        starter_code: |
+          def has_cycle(v, adj):
+              pass
+        concepts: [cycle_detection, backtracking]
+
+      - id: graph_s5_mcq_undirected
+        type: mcq
+        difficulty: medium
+        prompt: "In an UNDIRECTED graph, a cycle is detected if you encounter a visited node that is:"
+        options:
+          - "The starting node"
+          - "Not the immediate parent of the current node"
+          - "A leaf node"
+          - "The same as the current node"
+        correct_answer: 2
+        concepts: [undirected_cycles]
+
+  - slot_id: GRAPH_SLOT_6_BIPARTITE
+    mental_install: "Two groups with no internal connections (2-colorable)."
+    invariant: "Adjacent nodes MUST have different colors."
+    mastery_signals:
+      - Implements 2-coloring via BFS/DFS
+      - Explains why odd-length cycles break bipartiteness
+    hard_failures:
+      - Only checks one component
+      - Doesn't detect color conflicts correctly
+
+    templates:
+      - id: graph_s6_is_bipartite
+        type: coding
+        difficulty: hard
+        prompt: "Determine if a graph is bipartite (can be colored with 2 colors)."
+        language: python
+        concepts: [graph_coloring, bfs]
+
+  - slot_id: GRAPH_SLOT_7_TOPLOGICAL_SORT
+    mental_install: "Linear ordering based on dependencies (Prerequisites)."
+    invariant: "For edge U -> V, U must appear before V."
+    mastery_signals:
+      - Uses Kahn's algorithm (indegree) or DFS (reverse post-order)
+      - Detects cycles (prevents ordering)
+    hard_failures:
+      - Ignores indegree logic
+      - Returns unordered result
+
+    templates:
+      - id: graph_s7_kahns
+        type: coding
+        difficulty: medium
+        prompt: "Find a topological ordering of a DAG using Kahn's Algorithm."
+        concepts: [kahn_algorithm, indegree]
+
+  - slot_id: GRAPH_SLOT_8_UNION_FIND
+    mental_install: "Merge and identify disjoint sets efficiently."
+    invariant: "Representative (root) node identifies the set."
+    mastery_signals:
+      - Implements Find (with path compression) and Union (by rank/size)
+      - Explains O(alpha(N)) complexity
+    hard_failures:
+      - Missing path compression (leads to O(N))
+      - Unions nodes directly without finding roots
+
+    templates:
+      - id: graph_s8_dsu_impl
+        type: coding
+        difficulty: medium
+        prompt: "Implement a DSU class with Path Compression and Union by Rank."
+        concepts: [disjoint_set_union, path_compression]
+
+  - slot_id: GRAPH_SLOT_10_DIJKSTRA
+    mental_install: "Greedy exploration of the shortest verified path."
+    invariant: "Shortest distance to a node is fixed once it is popped from the priority queue."
+    mastery_signals:
+      - Uses Min-Heap correctly
+      - Updates distances only if a shorter path is found (relaxation)
+    hard_failures:
+      - Doesn't stop when target is reached
+      - Fails to handle weights (treats like BFS)
+
+    templates:
+      - id: graph_s10_dijkstra_impl
+        type: coding
+        difficulty: hard
+        prompt: "Find the shortest path from start to all nodes in a weighted graph."
+        concepts: [dijkstra, priority_queue]
+
+  - slot_id: GRAPH_SLOT_12_MST_PRIM_KRUSKAL
+    mental_install: "Connect all nodes with minimum total weight, no cycles."
+    invariant: "Always add the cheapest edge that doesn't create a cycle (Kruskal) or the cheapest edge from the current tree (Prim)."
+    mastery_signals:
+      - Uses DSU for Kruskal's or Heap for Prim's
+    hard_failures:
+      - Creates cycles in MST
+      - Missing nodes from tree
+    
+    templates:
+      - id: graph_s12_kruskal
+        type: coding
+        difficulty: hard
+        prompt: "Find the total weight of the Minimum Spanning Tree using Kruskal's algorithm."
+        concepts: [kruskal, greedy]
+      - Stops after one traversal (missing disconnected parts)
+      - Double counts nodes
+
+    templates:
+      - id: graph_s4_count_islands
+        type: coding
+        difficulty: medium
+        role: stretch
+        invariant_targets: [global_state]
+        probe_cost: 1.2
+        prompt: "Given a grid of 1s (land) and 0s (water), count the number of islands."
+        concepts: [flood_fill, components]
+
+# =========================================================
+# SLOT 5 — CYCLE DETECTION
+# =========================================================
+
+  - slot_id: GRAPH_SLOT_5_CYCLE_DETECTION
+    mental_install: "Seeing a node currently in the recursion stack means a circle."
+    invariant: "Back-edge implies cycle."
+    mastery_signals:
+      - Three-color marking (white, gray, black) or path set
+    hard_failures:
+      - Confuses 'visited' with 'current path'
+      - Fails on directed vs undirected distinction
+
+    templates:
+      - id: graph_s5_course_schedule
+        type: coding
+        difficulty: medium
+        role: stretch
+        invariant_targets: [cycle_check]
+        probe_cost: 1.5
+        prompt: "Determine if a course schedule is possible (detect cycle in directed graph)."
+        concepts: [dfs, cycle_detection]
+
+# =========================================================
+# SLOT 6 — BIPARTITE GRAPH
+# =========================================================
+
+  - slot_id: GRAPH_SLOT_6_BIPARTITE
+    mental_install: "Even-length cycles only; 2-coloring."
+    invariant: "Neighbor must always be different color."
+    mastery_signals:
+      - Uses BFS/DFS for coloring
+      - Detects odd-cycle conflict
+    hard_failures:
+      - Fails to check disconnected components
+
+    templates:
+      - id: graph_s6_coloring
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [graph_property]
+        probe_cost: 1.5
+        prompt: "Determine if a graph is Bipartite."
+        concepts: [coloring, bfs]
+
+# =========================================================
+# SLOT 7 — TOPOLOGICAL SORT
+# =========================================================
+
+  - slot_id: GRAPH_SLOT_7_TOPLOGICAL_SORT
+    mental_install: "Linear ordering respecting dependencies."
+    invariant: "Parent comes before child."
+    mastery_signals:
+      - Uses Kahn's Algorithm (indegree) or DFS Post-order reverse
+    hard_failures:
+      - Ignores cycles (impossible to sort)
+
+    templates:
+      - id: graph_s7_kahn
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [dependency_resolution]
+        probe_cost: 1.5
+        prompt: "Return a valid ordering of tasks given prerequisites."
+        concepts: [topological_sort, indegree]
+
+# =========================================================
+# SLOT 8 — UNION FIND (DISJOINT SET)
+# =========================================================
+
+  - slot_id: GRAPH_SLOT_8_UNION_FIND
+    mental_install: "Dynamic connectivity via representative delegates."
+    invariant: "Find root, Attach smaller tree to larger tree."
+    mastery_signals:
+      - Implements path compression
+      - Implements union by rank/size
+    hard_failures:
+      - O(N) find operation (naive implementation)
+
+    templates:
+      - id: graph_s8_explain
+        type: explanation
+        difficulty: medium
+        role: diagnostic
+        invariant_targets: [dsu_logic]
+        probe_cost: 0.8
+        prompt: "Explain how Path Compression helps Union-Find achieve nearly constant time."
+        concepts: [amortized_analysis]
+
+# =========================================================
+# SLOT 9 — REDUNDANT CONNECTION
+# =========================================================
+
+  - slot_id: GRAPH_SLOT_9_REDUNDANT_CONNECTION
+    mental_install: "Adding an edge between connected nodes creates a cycle."
+    invariant: "If find(u) == find(v), edge is redundant."
+    mastery_signals:
+      - Applies DSU to detect cycle
+    hard_failures:
+      - Uses DFS for every edge added (inefficient)
+
+    templates:
+      - id: graph_s9_redundant
+        type: coding
+        difficulty: medium
+        role: stretch
+        invariant_targets: [dsu_app]
+        probe_cost: 1.2
+        prompt: "Return the edge that creates a cycle in the tree."
+        concepts: [dsu, spanning_tree]
+
+# =========================================================
+# SLOT 10 — DIJKSTRA (SHORTEST PATH)
+# =========================================================
+
+  - slot_id: GRAPH_SLOT_10_DIJKSTRA
+    mental_install: "Greedy exploration by cheapest current cost."
+    invariant: "Once node popped from PQ, shortest path is final."
+    mastery_signals:
+      - Uses Min-Heap
+      - Handles edge relaxation
+    hard_failures:
+      - Fails on negative edges (Dijkstra limitation)
+      - Fails to update lower costs
+
+    templates:
+      - id: graph_s10_network_delay
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [greedy_path]
+        probe_cost: 2.0
+        prompt: "Calculate the time for a signal to reach all nodes (Network Delay Time)."
+        language: python
+        starter_code: |
+          import heapq
+          def networkDelayTime(times, n, k):
+              pass
+        concepts: [dijkstra, weighted_graph]
+
+# =========================================================
+# SLOT 11 — BELLMAN-FORD CONCEPT
+# =========================================================
+
+  - slot_id: GRAPH_SLOT_11_BELLMAN_FORD_CONCEPT
+    mental_install: "Relax all edges V-1 times."
+    invariant: "Can handle negative weights; Vth relaxation implies negative cycle."
+    mastery_signals:
+      - Explains difference from Dijkstra
+    hard_failures:
+      - Misidentifies complexity (O(VE))
+
+    templates:
+      - id: graph_s11_explain
+        type: explanation
+        difficulty: hard
+        role: diagnostic
+        invariant_targets: [negative_weights]
+        probe_cost: 0.8
+        prompt: "Why can't Dijkstra handle negative edge weights, and how does Bellman-Ford solve it?"
+        concepts: [relaxation, negative_cycles]
+
+# =========================================================
+# SLOT 12 — MST (PRIM / KRUSKAL)
+# =========================================================
+
+  - slot_id: GRAPH_SLOT_12_MST_PRIM_KRUSKAL
+    mental_install: "Connect everything with minimum total cost."
+    invariant: "Cut property: Cheapest edge crossing a cut is in MST."
+    mastery_signals:
+      - Implements Kruskal's (sorting + DSU) or Prim's (Heap)
+    hard_failures:
+      - Generates cycles
+      - Minimizes path instead of total weight
+
+    templates:
+      - id: graph_s12_min_cost
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [spanning_tree]
+        probe_cost: 2.0
+        prompt: "Find the minimum cost to connect all points."
+        concepts: [mst, union_find]

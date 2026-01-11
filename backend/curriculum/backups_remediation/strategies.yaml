@@ -1,0 +1,380 @@
+skill: strategies
+version: v1
+description: >
+  Curriculum for Algorithmic Paradigms: Divide & Conquer (Sorting),
+  Greedy Algorithms, and Backtracking strategies.
+
+slots:
+
+# =========================================================
+# SLOT 1 — MERGE SORT (DIVIDE & CONQUER)
+# =========================================================
+
+  - slot_id: STRATEGY_SLOT_1_MERGE_SORT
+    mental_install: "Recursive split, stable merge."
+    invariant: "Left and Right halves sorted independently, then zipped."
+    mastery_signals:
+      - Implements merge logic correctly
+      - Identifies O(N log N) stability
+    hard_failures:
+      - In-place merge errors (tricky)
+      - O(N^2) merge implementation
+
+    templates:
+      - id: strat_s1_merge_sort
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [divide_conquer]
+        probe_cost: 1.2
+        prompt: "Implement Merge Sort."
+        language: python
+        starter_code: |
+          def merge_sort(nums):
+              pass
+        concepts: [sorting, recursion]
+
+# =========================================================
+# SLOT 2 — QUICK SORT (PARTITIONING)
+# =========================================================
+
+  - slot_id: STRATEGY_SLOT_2_QUICK_SORT
+    mental_install: "Pivot selection places one element perfectly."
+    invariant: "Smallers Left, Largers Right."
+    mastery_signals:
+      - Implements Partition logic (Lomuto/Hoare)
+      - Understands worst-case O(N^2)
+    hard_failures:
+      - Infinite recursion on duplicates
+      - Bad pivot choice
+
+    templates:
+      - id: strat_s2_quick_sort
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [partitioning]
+        probe_cost: 1.2
+        prompt: "Implement Quick Sort."
+        concepts: [sorting, partitioning]
+
+# =========================================================
+# SLOT 3 — BINARY SEARCH (ADVANCED)
+# =========================================================
+
+  - slot_id: STRATEGY_SLOT_3_BINARY_SEARCH_ADV
+    mental_install: "Halving search space based on monotonic property."
+    invariant: "Target is always in [low, high]."
+    mastery_signals:
+      - Handles boundary conditions (loops, mid calc)
+      - Applies to answer ranges (not just arrays)
+    hard_failures:
+      - Infinite loop (mid selection bias)
+      - Off-by-one errors
+
+    templates:
+      - id: strat_s3_search_range
+        type: coding
+        difficulty: medium
+        role: stretch
+        invariant_targets: [monotonicity]
+        probe_cost: 1.0
+        prompt: "Find the first and last position of element in sorted array."
+        concepts: [binary_search]
+
+# =========================================================
+# SLOT 4 — GREEDY LOGIC
+# =========================================================
+
+  - slot_id: STRATEGY_SLOT_4_GREEDY_LOGIC
+    mental_install: "Local optimum leads to global optimum (sometimes)."
+    invariant: "Never look back."
+    mastery_signals:
+      - Identifies Greedy Choice Property
+    hard_failures:
+      - Applies greedy when DP is required (e.g., Change making with arbitrary coins)
+
+    templates:
+      - id: strat_s4_explain
+        type: explanation
+        difficulty: easy
+        prompt: "Why does the Greedy choice fail for the 0/1 Knapsack problem but work for the Fractional Knapsack problem?"
+        rubric: "Must mention that items cannot be broken in 0/1, so leaving space can be better than taking the most valuable per-pound item."
+        concepts: [greedy_choice, optimality]
+
+  - slot_id: STRATEGY_SLOT_5_INTERVALS
+    mental_install: "Sort by endpoints to maximize non-overlaps."
+    invariant: "The first to finish leaves the most space for others."
+    mastery_signals:
+      - Sorts by 'finish time' rather than 'start time' for scheduling
+    hard_failures:
+      - Incorrect sorting criteria
+
+    templates:
+      - id: strat_s5_meeting_rooms
+        type: coding
+        difficulty: medium
+        prompt: "Given intervals of meetings, find the maximum number of meetings you can attend."
+        concepts: [greedy, sorting]
+
+  - slot_id: STRATEGY_SLOT_7_STATE_SPACE
+    mental_install: "Backtracking is DFS on a virtual tree of choices."
+    invariant: "Current state = Path + Options."
+    mastery_signals:
+      - Illustrates the decision tree
+      - Explains the 'undo' step (backtrack)
+    hard_failures:
+      - Forgets to undo state changes (e.g., set visited back to false)
+      - Doesn't identify the base case of the DFS
+
+    templates:
+      - id: strat_s7_backtrack_logic
+        type: explanation
+        difficulty: easy
+        prompt: "In a backtracking algorithm, what is the 'undo' step and why is it necessary?"
+        rubric: "Must explain that since state is shared across recursive calls, we must reset it to its previous value to explore other branches properly."
+        concepts: [backtracking, shared_state]
+
+      - id: strat_s7_remediation
+        type: explanation
+        variant: remediation
+        difficulty: easy
+        prompt: |
+          Backtracking is like a maze. If you hit a dead end, you physically turn 
+          around and go back to the last fork in the road so you can try a different path.
+          'Undoing' state is like picking up the breadcrumbs you laid down.
+        concepts: [analogy, backtracking]
+
+  - slot_id: STRATEGY_SLOT_8_PERMUTATIONS
+    mental_install: "Order matters. Every used element is a constraint."
+    invariant: "Depth of tree = Number of elements."
+    mastery_signals:
+      - Correctly swaps or uses visited array to generate all orders
+    hard_failures:
+      - Repeated elements
+      - Missing permutations
+
+    templates:
+      - id: strat_s8_permutations
+        type: coding
+        difficulty: medium
+        prompt: "Generate all permutations of a list of unique numbers."
+        concepts: [backtracking, permutations]
+
+  - slot_id: STRATEGY_SLOT_9_SUBSETS
+    mental_install: "Decision: Include or Exclude each element?"
+    invariant: "Total subsets = 2^N."
+    mastery_signals:
+      - Implements the '2-choice' backtracking model
+    hard_failures:
+      - Omission of the empty set
+      - Redundant subsets
+
+    templates:
+      - id: strat_s9_subsets_impl
+        type: coding
+        difficulty: medium
+        prompt: "Generate all possible power sets (subsets) of a list."
+        concepts: [backtracking, power_set]
+
+  - slot_id: STRATEGY_SLOT_11_N_QUEENS
+    mental_install: "Placement with multi-dimensional constraints (Row, Col, Diagonals)."
+    invariant: "A Queen at (r,c) blocks row r, col c, and diagonals r+c and r-c."
+    mastery_signals:
+      - Uses sets/boolean arrays to track attacked lines
+    hard_failures:
+      - Incorrect diagonal math
+      - O(N!) check without pruning
+
+    templates:
+      - id: strat_s11_nqueens
+        type: coding
+        difficulty: hard
+        prompt: "Solve the N-Queens problem."
+        concepts: [backtracking, constraint_satisfaction]
+        role: diagnostic
+        invariant_targets: [greedy_choice]
+        probe_cost: 0.8
+        prompt: "Why does a Greedy algorithm fail for the Coin Change problem with coins [1, 3, 4] and target 6?"
+        rubric: "Greedy takes 4 then cannot solve 2 (1+1) -> total 3 coins. Optimal is 3+3 (2 coins)."
+        concepts: [counter_example]
+
+# =========================================================
+# SLOT 5 — INTERVALS
+# =========================================================
+
+  - slot_id: STRATEGY_SLOT_5_INTERVALS
+    mental_install: "Sort by finish time (usually) to enable greedy selection."
+    invariant: "Earliest finish allows most room for others."
+    mastery_signals:
+      - Sorts intervals correctly
+      - Standard Non-overlapping intervals logic
+    hard_failures:
+      - Sorts by start time for max capacity (wrong greedy metric)
+
+    templates:
+      - id: strat_s5_non_overlapping
+        type: coding
+        difficulty: medium
+        role: stretch
+        invariant_targets: [interval_scheduling]
+        probe_cost: 1.5
+        prompt: "Minimum number of intervals to remove to make the rest non-overlapping."
+        concepts: [greedy, sorting]
+
+# =========================================================
+# SLOT 6 — HUFFMAN CODING (CONCEPT)
+# =========================================================
+
+  - slot_id: STRATEGY_SLOT_6_HUFFMAN_CONCEPT
+    mental_install: "Frequent items get short codes."
+    invariant: "Prefix-free coding tree."
+    mastery_signals:
+      - Explains tree construction from bottom up
+    hard_failures:
+      - Confuses fixed-length with variable-length encoding
+
+    templates:
+      - id: strat_s6_explain
+        type: explanation
+        difficulty: medium
+        role: diagnostic
+        invariant_targets: [compression]
+        probe_cost: 0.8
+        prompt: "How does Huffman coding use a Priority Queue to build an optimal tree?"
+        concepts: [compression, heap_app]
+
+# =========================================================
+# SLOT 7 — BACKTRACKING STATE SPACE
+# =========================================================
+
+  - slot_id: STRATEGY_SLOT_7_STATE_SPACE
+    mental_install: "Explore, Validate, Undo (Backtrack)."
+    invariant: "Clean up state after returning from recursion."
+    mastery_signals:
+      - Identifies base cases and choices
+      - Implements state restoration
+    hard_failures:
+      - Modifies global state without undoing
+      - Pass-by-reference bugs
+
+    templates:
+      - id: strat_s7_explain
+        type: explanation
+        difficulty: easy
+        role: diagnostic
+        invariant_targets: [backtracking_template]
+        probe_cost: 0.5
+        prompt: "What is the purpose of 'removing' the item from the path after the recursive call returns?"
+        concepts: [state_management]
+
+# =========================================================
+# SLOT 8 — PERMUTATIONS
+# =========================================================
+
+  - slot_id: STRATEGY_SLOT_8_PERMUTATIONS
+    mental_install: "Ordering matters."
+    invariant: "N! complexity; must usage tracking."
+    mastery_signals:
+      - Handles duplicates (optional challenge)
+      - Generates all permutations
+    hard_failures:
+      - Reuses elements incorrectly
+
+    templates:
+      - id: strat_s8_permutations
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [combinatorics]
+        probe_cost: 1.2
+        prompt: "Generate all permutations of a list of distinct numbers."
+        concepts: [recursion]
+
+# =========================================================
+# SLOT 9 — SUBSETS
+# =========================================================
+
+  - slot_id: STRATEGY_SLOT_9_SUBSETS
+    mental_install: "To be or not to be (in the set)."
+    invariant: "2^N complexity; Inclusion/Exclusion choice."
+    mastery_signals:
+      - Cascading recursion or Bit manipulation
+    hard_failures:
+      - Duplicate subsets
+
+    templates:
+      - id: strat_s9_subsets
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [power_set]
+        probe_cost: 1.2
+        prompt: "Generate all possible subsets (the power set)."
+        concepts: [recursion]
+
+# =========================================================
+# SLOT 10 — COMBINATIONS
+# =========================================================
+
+  - slot_id: STRATEGY_SLOT_10_COMBINATIONS
+    mental_install: "K items from N; Order doesn't matter."
+    invariant: "Start index restricts backward selection."
+    mastery_signals:
+      - Passes 'start' index to recursion
+    hard_failures:
+      - Treats [1,2] and [2,1] as distinct (Permutation behavior)
+
+    templates:
+      - id: strat_s10_combinations
+        type: coding
+        difficulty: medium
+        role: proof
+        invariant_targets: [combination_logic]
+        probe_cost: 1.2
+        prompt: "Return all combinations of k numbers out of 1..n."
+        concepts: [recursion]
+
+# =========================================================
+# SLOT 11 — N-QUEENS
+# =========================================================
+
+  - slot_id: STRATEGY_SLOT_11_N_QUEENS
+    mental_install: "Constraint Propagation."
+    invariant: "One queen per row, col, diag."
+    mastery_signals:
+      - Validates placement efficiently
+    hard_failures:
+      - Checks all N! placements (too slow)
+
+    templates:
+      - id: strat_s11_nqueens
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [constraint_satisfaction]
+        probe_cost: 2.0
+        prompt: "Solve the N-Queens puzzle."
+        concepts: [backtracking]
+
+# =========================================================
+# SLOT 12 — SUDOKU SOLVER
+# =========================================================
+
+  - slot_id: STRATEGY_SLOT_12_SUDOKU
+    mental_install: "Fill, Check, Forward."
+    invariant: "Matrix constraints."
+    mastery_signals:
+      - Solves 9x9 grid
+    hard_failures:
+      - Modifies input board incorrectly
+
+    templates:
+      - id: strat_s12_sudoku
+        type: coding
+        difficulty: hard
+        role: stretch
+        invariant_targets: [solver]
+        probe_cost: 2.0
+        prompt: "Write a program to solve a Sudoku puzzle by filling the empty cells."
+        concepts: [backtracking]

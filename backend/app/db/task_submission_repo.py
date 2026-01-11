@@ -45,6 +45,23 @@ class TaskSubmissionRepo:
             TaskSubmission(**self._serialize(doc))
             async for doc in cursor
         ]
+
+    async def get_submissions_for_user(
+        self,
+        user_id: str,
+        limit: int = 50,
+        session=None
+    ) -> list[TaskSubmission]:
+        cursor = self.collection.find(
+            {"user_id": user_id},
+            session=session
+        ).sort("created_at", -1).limit(limit)
+
+        return [
+            TaskSubmission(**self._serialize(doc))
+            async for doc in cursor
+        ]
+
     async def get_submission(self, user_id: str, slot_id: str, task_instance_id: str, session=None):
         """
         Check if a submission already exists for this user + slot + task_instance

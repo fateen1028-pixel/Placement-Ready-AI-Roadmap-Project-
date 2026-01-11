@@ -18,9 +18,11 @@ class TaskSlot(BaseModel):
         "completed",
         "failed",
         "remediation_required",
+        "skipped",
+        "reinforcement_required",
     ]
     active_task_instance_id: Optional[str] = None
-    locked_reason: Optional[Literal["dependency_failed", "remediation_required"]] = None
+    locked_reason: Optional[Literal["dependency_failed", "remediation_required", "requirements_not_met"]] = None
     remediation_attempts: int = 0
     
     # 🔑 NEW: Track position in the remediation strategy list
